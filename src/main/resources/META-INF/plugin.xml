@@ -7,12 +7,11 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="com.github.alisonli.historyplugin.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.github.alisonli.historyplugin.services.MyProjectService"/>
+        <projectService serviceImplementation="com.github.alisonli.historyplugin.services.JiraFetcherService"/>
     </extensions>
 
     <applicationListeners>
-        <listener class="com.github.alisonli.historyplugin.listeners.MyProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
+        <listener class="com.github.alisonli.historyplugin.listeners.HistoryWindowListener"
+                  topic="com.intellij.openapi.wm.ex.ToolWindowManagerListener"/>
     </applicationListeners>
 </idea-plugin>
