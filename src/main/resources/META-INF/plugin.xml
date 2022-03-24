@@ -4,7 +4,7 @@
     <name>History</name>
     <vendor email="alisli@cs.ubc.ca">Alison Li</vendor>
 
-    <idea-version since-build="213"/>
+    <idea-version since-build="212"/>
 
     <depends>com.intellij.modules.platform</depends>
 
@@ -12,8 +12,8 @@
         <projectService serviceImplementation="com.github.alisonli.historyplugin.services.JiraFetcherService"/>
     </extensions>
 
-    <applicationListeners>
+    <projectListeners>
         <listener class="com.github.alisonli.historyplugin.listeners.HistoryWindowListener"
                   topic="com.intellij.openapi.wm.ex.ToolWindowManagerListener"/>
-    </applicationListeners>
+    </projectListeners>
 </idea-plugin>

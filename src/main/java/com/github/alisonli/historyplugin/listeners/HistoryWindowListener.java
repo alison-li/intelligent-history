@@ -1,5 +1,6 @@
 package com.github.alisonli.historyplugin.listeners;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ex.ToolWindowManagerListener;
@@ -10,6 +11,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class HistoryWindowListener implements ToolWindowManagerListener {
 
+    private static final Logger LOG = Logger.getInstance(HistoryWindowListener.class);
+
     /**
      * Invoked when tool window is shown.
      *
@@ -17,7 +20,8 @@ public class HistoryWindowListener implements ToolWindowManagerListener {
      */
     @Override
     public void toolWindowShown(@NotNull ToolWindow toolWindow) {
-        // TODO: Trying to get the "Show History" tool window ID
-        Messages.showInfoMessage(toolWindow.getId(), "TOOL WINDOW ID");
+        LOG.info("TOOL WINDOW SHOWN: " +
+                toolWindow.getTitle() + ", " +
+                toolWindow.getId());
     }
 }
