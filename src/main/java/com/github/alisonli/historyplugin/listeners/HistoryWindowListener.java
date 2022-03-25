@@ -1,7 +1,6 @@
 package com.github.alisonli.historyplugin.listeners;
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ex.ToolWindowManagerListener;
 import org.jetbrains.annotations.NotNull;
