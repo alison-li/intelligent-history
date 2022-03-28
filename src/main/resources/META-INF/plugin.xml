@@ -1,7 +1,7 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <id>com.github.alisonli.historyplugin</id>
-    <name>History</name>
+    <name>Intelligent History</name>
     <vendor email="alisli@cs.ubc.ca">Alison Li</vendor>
 
     <idea-version since-build="212"/>
@@ -20,7 +20,7 @@
     <actions>
         <action id="com.github.alisonli.historyplugin.actions.SimplifyHistoryAction"
                 class="com.github.alisonli.historyplugin.actions.SimplifyHistoryAction"
-                text="History Simplify"
+                text="Show Intelligent History"
                 description="De-emphasizes less important commits in the file history based on diff analysis."
                 icon="AllIcons.Actions.ShowHiddens">
             <add-to-group group-id="Vcs.FileHistory.Toolbar" anchor="after"
@@ -28,12 +28,12 @@
         </action>
         <action id="com.github.alisonli.historyplugin.actions.JiraInHistoryAction"
                 class="com.github.alisonli.historyplugin.actions.JiraInHistoryAction"
-                text="History Fetch Jira Issues"
+                text="Extract from Jira"
                 description="Extracts Jira issue keys from commit messages and interleaves the information from the
                                 matching Jira issue with the commits in file history."
                 icon="AllIcons.ToolbarDecorator.AddJira">
             <add-to-group group-id="Vcs.FileHistory.Toolbar" anchor="after"
-                          relative-to-action="Vcs.FileHistory.PresentationSettings"/>
+                          relative-to-action="com.github.alisonli.historyplugin.actions.SimplifyHistoryAction"/>
         </action>
     </actions>
 </idea-plugin>
