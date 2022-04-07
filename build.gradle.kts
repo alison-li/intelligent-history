@@ -24,6 +24,11 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    implementation("io.github.java-diff-utils:java-diff-utils:4.5")
+    implementation("net.rcarz:jira-client:0.5")
+}
+
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
     pluginName.set(properties("pluginName"))
