@@ -1,5 +1,8 @@
 package com.github.alisonli.historyplugin.services;
 
+import com.github.difflib.DiffUtils;
+import com.github.difflib.patch.AbstractDelta;
+import com.github.difflib.patch.Patch;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.*;
@@ -14,6 +17,7 @@ import git4idea.changes.GitChangeUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -66,5 +70,13 @@ public final class DiffAnalyzerService {
     @Nullable
     private AbstractVcs getVcs(@Nullable VcsKey vcsKey) {
         return vcsKey == null ? null : ProjectLevelVcsManager.getInstance(this.project).findVcsByName(vcsKey.getName());
+    }
+
+    // TODO: Need to try testing this
+    private static List<AbstractDelta<String>> getDiffBetweenRevisions(String beforeRevision, String afterRevision) throws IOException {
+        List<String> left = List.of(beforeRevision.split("\n"));
+        List<String> right = List.of(afterRevision.split("\n"));
+        Patch<String> patch = DiffUtils.diff(left, right);
+        return patch.getDeltas();
     }
 }

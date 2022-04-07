@@ -46,7 +46,9 @@ public class SimplifyHistoryAction extends AnAction {
         DiffAnalyzerService diffAnalyzerService = new DiffAnalyzerService(project);
 
         List<VcsFileRevision> revisionList = diffAnalyzerService.getFileHistoryRevisionList(vcsKey, filePath);
-        List<List<Change>> changesList = new ArrayList<>();
+        // TODO Populate these lists?
+        List<VcsFileRevision> trivialRevisionList = new ArrayList<>();
+        List<VcsFileRevision> filteredRevisionList = new ArrayList<>();
         if (revisionList != null && revisionList.size() > 1) {
             try {
                 for (int i = 0; i < revisionList.size() - 1; i++) {
@@ -54,22 +56,19 @@ public class SimplifyHistoryAction extends AnAction {
                     GitFileRevision rev1 = (GitFileRevision) revisionList.get(i);
                     GitFileRevision rev2 = (GitFileRevision) revisionList.get(i + 1);
                     List<Change> changes = diffAnalyzerService.getChangesBetweenRevisions(filePath, rev1, rev2);
-                    changesList.add(changes);
+                    for (Change change : changes) {
+                        Change.Type type = change.getType();
+                        ContentRevision contentRevisionBefore = change.getBeforeRevision();
+                        ContentRevision contentRevisionAfter = change.getAfterRevision();
+                        try {
+                            String beforeContent = contentRevisionBefore.getContent();
+                            String afterContent = contentRevisionAfter.getContent();
+                            // TODO: Call into service
+                        } catch (VcsException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
                 }
-            } catch (VcsException ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        for (List<Change> changes : changesList) {
-            Change change = changes.get(0);
-            Change.Type type = change.getType();
-            ContentRevision contentRevisionBefore = change.getBeforeRevision();
-            ContentRevision contentRevisionAfter = change.getAfterRevision();
-            try {
-                // TODO: Now we have retrieved the before and after as strings - do something with them.
-                String beforeContent = contentRevisionBefore.getContent();
-                String afterContent = contentRevisionAfter.getContent();
             } catch (VcsException ex) {
                 ex.printStackTrace();
             }
