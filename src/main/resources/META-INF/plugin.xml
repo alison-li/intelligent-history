@@ -14,10 +14,6 @@
         <projectService serviceImplementation="com.github.alisonli.historyplugin.services.JiraFetcherService"/>
     </extensions>
 
-    <projectListeners>
-        <listener class="com.github.alisonli.historyplugin.listeners.HistoryWindowListener"
-                  topic="com.intellij.openapi.wm.ex.ToolWindowManagerListener"/>
-    </projectListeners>
     <actions>
         <action id="com.github.alisonli.historyplugin.actions.IntelligentHistoryAction"
                 class="com.github.alisonli.historyplugin.actions.IntelligentHistoryAction"
