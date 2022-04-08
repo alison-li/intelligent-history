@@ -19,8 +19,8 @@
                   topic="com.intellij.openapi.wm.ex.ToolWindowManagerListener"/>
     </projectListeners>
     <actions>
-        <action id="com.github.alisonli.historyplugin.actions.SimplifyHistoryAction"
-                class="com.github.alisonli.historyplugin.actions.SimplifyHistoryAction"
+        <action id="com.github.alisonli.historyplugin.actions.IntelligentHistoryAction"
+                class="com.github.alisonli.historyplugin.actions.IntelligentHistoryAction"
                 text="Show Intelligent History"
                 description="De-emphasizes less important commits in the file history based on diff analysis."
                 icon="AllIcons.Actions.ShowHiddens">
@@ -34,7 +34,7 @@
                                 matching Jira issue with the commits in file history."
                 icon="AllIcons.ToolbarDecorator.AddJira">
             <add-to-group group-id="Vcs.FileHistory.Toolbar" anchor="after"
-                          relative-to-action="com.github.alisonli.historyplugin.actions.SimplifyHistoryAction"/>
+                          relative-to-action="com.github.alisonli.historyplugin.actions.IntelligentHistoryAction"/>
         </action>
     </actions>
 </idea-plugin>
