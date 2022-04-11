@@ -1,22 +1,24 @@
 package com.github.alisonli.historyplugin.actions;
 
+import com.github.alisonli.historyplugin.services.DiffAnalyzerService;
+import com.github.difflib.patch.AbstractDelta;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Condition;
-import com.intellij.openapi.vcs.FilePath;
+import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.actions.VcsContextUtil;
+import com.intellij.openapi.vcs.changes.ContentRevision;
 import com.intellij.openapi.vcs.changes.ui.ChangesViewContentManager;
+import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.TabDescriptor;
 import com.intellij.ui.content.TabGroupId;
 import com.intellij.util.ContentUtilEx;
-import com.intellij.vcs.log.Hash;
-import com.intellij.vcs.log.VcsLogDataKeys;
-import com.intellij.vcs.log.VcsLogUi;
+import com.intellij.vcs.log.*;
 import com.intellij.vcs.log.history.FileHistoryUi;
 import com.intellij.vcs.log.history.FileHistoryUiFactory;
 import com.intellij.vcs.log.impl.HashImpl;
@@ -25,15 +27,19 @@ import com.intellij.vcs.log.impl.VcsLogManager;
 import com.intellij.vcs.log.impl.VcsProjectLog;
 import com.intellij.vcs.log.ui.VcsLogPanel;
 import com.intellij.vcs.log.util.VcsLogUtil;
+import com.intellij.vcs.log.visible.VisiblePack;
+import com.intellij.vcs.log.visible.filters.VcsLogFilterObject;
 import com.intellij.vcsUtil.VcsUtil;
+import git4idea.GitContentRevision;
+import git4idea.GitFileRevision;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 
 public class IntelligentHistoryAction extends AnAction {
-
     private static final Logger LOG = Logger.getInstance(IntelligentHistoryAction.class);
     private TabGroupId tabGroupId =
             new TabGroupId("intelligent-history", () -> "Intelligent History", false);
@@ -48,59 +54,44 @@ public class IntelligentHistoryAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = Objects.requireNonNull(e.getProject());
-//        VcsKey vcsKey = Objects.requireNonNull(e.getData(VcsDataKeys.VCS));
-//        FilePath filePath = Objects.requireNonNull(e.getData(VcsDataKeys.FILE_PATH));
-//
-//        DiffAnalyzerService diffAnalyzerService = new DiffAnalyzerService(project);
-//
-//        List<VcsFileRevision> revisionList = diffAnalyzerService.getFileHistoryRevisionList(vcsKey, filePath);
-//        // TODO Populate these lists?
-//        List<VcsFileRevision> trivialRevisionList = new ArrayList<>();
-//        List<VcsFileRevision> filteredRevisionList = new ArrayList<>();
-//        if (revisionList != null && revisionList.size() > 1) {
-//            try {
-//                for (int i = 0; i < revisionList.size() - 1; i++) {
-//                    // Assume the VCS is git
-//                    GitFileRevision rev1 = (GitFileRevision) revisionList.get(i);
-//                    GitFileRevision rev2 = (GitFileRevision) revisionList.get(i + 1);
-//                    List<Change> changes = diffAnalyzerService.getChangesBetweenRevisions(filePath, rev1, rev2);
-//                    for (Change change : changes) {
-//                        Change.Type type = change.getType();
-//                        ContentRevision contentRevisionBefore = change.getBeforeRevision();
-//                        ContentRevision contentRevisionAfter = change.getAfterRevision();
-//                        try {
-//                            String beforeContent = contentRevisionBefore.getContent();
-//                            String afterContent = contentRevisionAfter.getContent();
-//                            // TODO: Call into service
-//                        } catch (VcsException ex) {
-//                            ex.printStackTrace();
-//                        }
-//                    }
-//                }
-//            } catch (VcsException ex) {
-//                ex.printStackTrace();
-//            }
-//        }
+        VcsKey vcsKey = Objects.requireNonNull(e.getData(VcsDataKeys.VCS));
+        FilePath filePath = Objects.requireNonNull(e.getData(VcsDataKeys.FILE_PATH));
 
-        // Version 1
-//        VcsLogUi logUi = e.getData(VcsLogDataKeys.VCS_LOG_UI);
-//        VcsLogFilterCollection filters;
-//        if (Registry.is("vcs.log.copy.filters.to.new.tab") && logUi != null) {
-//            filters = logUi.getFilterUi().getFilters();
-//        }
-//        else {
-//            filters = VcsLogFilterObject.collection();
-//        }
-//
-//        MainVcsLogUi ui = VcsProjectLog.getInstance(project).openLogTab(filters);
-//        ui.getChangesBrowser().add(new JLabel("ldaf"));
+        DiffAnalyzerService diffAnalyzerService = new DiffAnalyzerService(project);
 
-        // Version 2 Working with James to get file history
+        List<VcsFileRevision> revisionList = diffAnalyzerService.getFileHistoryRevisionList(vcsKey, filePath);
+        Collections.reverse(revisionList);
+        List<String> filteredRevisionList = new ArrayList<>();
+        if (revisionList != null && revisionList.size() > 1) {
+            for (int i = 0; i < revisionList.size(); i++) {
+                GitFileRevision rev1 = (GitFileRevision) revisionList.get(i);
+                GitFileRevision rev2 = (GitFileRevision) revisionList.get(i + 1);
+                ContentRevision contentRev1 = GitContentRevision.createRevision(filePath, rev1.getRevisionNumber(), project);
+                ContentRevision contentRev2 = GitContentRevision.createRevision(filePath, rev2.getRevisionNumber(), project);
+                try {
+                    String beforeContent = contentRev1.getContent();
+                    String afterContent = contentRev2.getContent();
+                    // TODO: Call into `DiffAnalyzerService`, receive RevisionMetadata
+                    List<AbstractDelta<String>> patch = diffAnalyzerService.getDiffBetweenRevisions(beforeContent, afterContent);
+                    if (true) {
+                        filteredRevisionList.add(rev2.getHash());
+                        break;
+                    }
+                } catch (VcsException | IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+
         List<FilePath> selectedFiles = VcsContextUtil.selectedFilePaths(e.getDataContext());
-        showFileHistory(project, selectedFiles, null);
+        showFileHistory(project, selectedFiles, null, filteredRevisionList);
     }
 
-    private void showFileHistory(Project project, Collection<FilePath> paths, @Nullable String revisionNumber) {
+    /**
+     * Adapted from {@link com.intellij.vcs.log.history.VcsLogFileHistoryProviderImpl}
+     */
+    private void showFileHistory(Project project, Collection<FilePath> paths, @Nullable String revisionNumber,
+                                 Collection<String> hashList) {
         if (paths.size() != 1) return;
 
         List<FilePath> pathList = new ArrayList<>(paths);
@@ -119,13 +110,14 @@ public class IntelligentHistoryAction extends AnAction {
         Function<FileHistoryUi, String> fun = (__) -> path.getName() + suffix;
         ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow(ChangesViewContentManager.TOOLWINDOW_ID);
         if (fileHistoryUi != null) {
-            // TODO: Creates a deep copy of `fileHistoryUi` for now, but can possibly change log data
             FileHistoryUi intelligentFileHistoryUi = new FileHistoryUiFactory(path, root, hash).createLogUi(project, fileHistoryUi.getLogData());
-            intelligentFileHistoryUi.setVisiblePack(fileHistoryUi.getDataPack());
+            VcsLogFilterCollection filters = VcsLogFilterObject.collection(VcsLogFilterObject.fromHashes(hashList));
+            VisiblePack visiblePack = new VisiblePack(fileHistoryUi.getDataPack().getDataPack(), fileHistoryUi.getDataPack().getVisibleGraph(), false, filters);
+            intelligentFileHistoryUi.setVisiblePack(visiblePack);
             ContentUtilEx.addTabbedContent(
                     toolWindow.getContentManager(),
                     tabGroupId,
-                    new TabDescriptor(new VcsLogPanel(logManager, intelligentFileHistoryUi),() -> fun.apply(intelligentFileHistoryUi), intelligentFileHistoryUi),
+                    new TabDescriptor(new VcsLogPanel(logManager, intelligentFileHistoryUi), () -> fun.apply(intelligentFileHistoryUi), intelligentFileHistoryUi),
                     true
             );
             toolWindow.activate(null);
