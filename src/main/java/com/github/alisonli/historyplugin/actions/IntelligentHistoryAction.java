@@ -1,7 +1,7 @@
 package com.github.alisonli.historyplugin.actions;
 
+import com.github.alisonli.historyplugin.model.RevisionMetadata;
 import com.github.alisonli.historyplugin.services.DiffAnalyzerService;
-import com.github.difflib.patch.AbstractDelta;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
@@ -19,8 +19,15 @@ import com.intellij.ui.content.TabDescriptor;
 import com.intellij.ui.content.TabGroupId;
 import com.intellij.util.ContentUtilEx;
 import com.intellij.vcs.log.*;
+import com.intellij.vcs.log.data.DataPack;
+import com.intellij.vcs.log.data.DataPackBase;
+import com.intellij.vcs.log.data.VcsLogStorage;
+import com.intellij.vcs.log.graph.PermanentGraph;
+import com.intellij.vcs.log.graph.VisibleGraph;
+import com.intellij.vcs.log.graph.impl.facade.PermanentGraphImpl;
 import com.intellij.vcs.log.history.FileHistoryUi;
 import com.intellij.vcs.log.history.FileHistoryUiFactory;
+import com.intellij.vcs.log.history.VcsLogFileHistoryFilter;
 import com.intellij.vcs.log.impl.HashImpl;
 import com.intellij.vcs.log.impl.VcsLogContentUtil;
 import com.intellij.vcs.log.impl.VcsLogManager;
@@ -35,7 +42,6 @@ import git4idea.GitFileRevision;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 
@@ -71,13 +77,13 @@ public class IntelligentHistoryAction extends AnAction {
                 try {
                     String beforeContent = contentRev1.getContent();
                     String afterContent = contentRev2.getContent();
-                    // TODO: Call into `DiffAnalyzerService`, receive RevisionMetadata
-                    List<AbstractDelta<String>> patch = diffAnalyzerService.getDiffBetweenRevisions(beforeContent, afterContent);
+                    RevisionMetadata metadata = diffAnalyzerService.getRevisionMetadata(beforeContent, afterContent);
+                    // TODO: Use metadata to add to `filteredRevisionList`
                     if (true) {
                         filteredRevisionList.add(rev2.getHash());
                         break;
                     }
-                } catch (VcsException | IOException ex) {
+                } catch (VcsException ex) {
                     ex.printStackTrace();
                 }
             }
@@ -91,7 +97,7 @@ public class IntelligentHistoryAction extends AnAction {
      * Adapted from {@link com.intellij.vcs.log.history.VcsLogFileHistoryProviderImpl}
      */
     private void showFileHistory(Project project, Collection<FilePath> paths, @Nullable String revisionNumber,
-                                 Collection<String> hashList) {
+                                 Collection<String> hashes) {
         if (paths.size() != 1) return;
 
         List<FilePath> pathList = new ArrayList<>(paths);
@@ -111,9 +117,22 @@ public class IntelligentHistoryAction extends AnAction {
         ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow(ChangesViewContentManager.TOOLWINDOW_ID);
         if (fileHistoryUi != null) {
             FileHistoryUi intelligentFileHistoryUi = new FileHistoryUiFactory(path, root, hash).createLogUi(project, fileHistoryUi.getLogData());
-            VcsLogFilterCollection filters = VcsLogFilterObject.collection(VcsLogFilterObject.fromHashes(hashList));
-            VisiblePack visiblePack = new VisiblePack(fileHistoryUi.getDataPack().getDataPack(), fileHistoryUi.getDataPack().getVisibleGraph(), false, filters);
+            // TODO: Need to look into this filter collection
+            VcsLogFilterCollection filters = VcsLogFilterObject.collection(VcsLogFilterObject.fromHashes(hashes));
+
+            Set<Integer> matchedCommits = new HashSet<>();
+            for (String s : hashes) {
+                Hash h = HashImpl.build(s);
+                VcsLogStorage logStorage = logManager.getDataManager().getStorage();
+                matchedCommits.add(logStorage.getCommitIndex(h, root));
+            }
+
+            DataPackBase dataPack = fileHistoryUi.getDataPack().getDataPack();
+            PermanentGraph<Integer> permanentGraph = ((DataPack) fileHistoryUi.getDataPack().getDataPack()).getPermanentGraph();
+            VisibleGraph<Integer> visibleGraph = permanentGraph.createVisibleGraph(PermanentGraph.SortType.Normal, null, matchedCommits);
+            VisiblePack visiblePack = new VisiblePack(dataPack, visibleGraph, false, filters);
             intelligentFileHistoryUi.setVisiblePack(visiblePack);
+
             ContentUtilEx.addTabbedContent(
                     toolWindow.getContentManager(),
                     tabGroupId,
