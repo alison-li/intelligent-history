@@ -1,16 +1,22 @@
 package com.github.alisonli.historyplugin.services;
 
+import com.github.alisonli.historyplugin.model.RevisionMetadata;
+import com.github.difflib.DiffUtils;
+import com.github.difflib.patch.AbstractDelta;
+import com.github.difflib.patch.Patch;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.*;
-import com.intellij.openapi.vcs.changes.Change;
+import com.intellij.openapi.vcs.changes.ContentRevision;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.history.VcsHistoryProvider;
 import com.intellij.openapi.vcs.history.VcsHistorySession;
-import com.intellij.openapi.vfs.VirtualFile;
-import git4idea.GitFileRevision;
-import git4idea.GitUtil;
-import git4idea.changes.GitChangeUtils;
+import com.intellij.vcs.log.Hash;
+import com.intellij.vcs.log.graph.VisibleGraph;
+import com.intellij.vcs.log.history.FileHistoryPaths;
+import com.intellij.vcs.log.history.FileHistoryUi;
+import com.intellij.vcs.log.ui.VcsLogInternalDataKeys;
+import git4idea.log.GitLogDiffHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,41 +36,41 @@ public final class DiffAnalyzerService {
         this.project = project;
     }
 
-    /**
-     * Adapted from {@link git4idea.history.GitDiffFromHistoryHandler}
-     *
-     */
-    public List<Change> getChangesBetweenRevisions(@NotNull FilePath path, @NotNull GitFileRevision rev1,
-                                                    @Nullable GitFileRevision rev2)
-            throws VcsException {
-        VirtualFile root = GitUtil.getRootForFile(this.project, path);
-        String hash1 = rev1.getHash();
-
-        if (rev2 == null) {
-            return new ArrayList<>(GitChangeUtils.getDiffWithWorkingDir(this.project, root, hash1,
-                    Collections.singleton(path), false));
+    public List<ContentRevision> getFileHistoryRevisionList(FileHistoryUi logUi) {
+        List<ContentRevision> revisionList = new ArrayList<>();
+        GitLogDiffHandler diffHandler = new GitLogDiffHandler(this.project);
+        VisibleGraph<Integer> visibleGraph = logUi.getDataPack().getVisibleGraph();
+        int rowsCount = visibleGraph.getVisibleCommitCount();
+        for (int i = 0; i < rowsCount; i++) {
+            Integer commitId = visibleGraph.getRowInfo(i).getCommit();
+            FilePath filePath = FileHistoryPaths.filePath(logUi.getDataPack(), commitId);
+            Hash commitHash = logUi.getLogData()
+                    .getMiniDetailsGetter()
+                    .getCommitData(commitId, Collections.singleton(commitId)).getId();
+            ContentRevision contentRevision = diffHandler.createContentRevision(filePath, commitHash);
+            revisionList.add(contentRevision);
         }
-
-        String hash2 = rev2.getHash();
-        return new ArrayList<>(GitChangeUtils.getDiff(this.project, root, hash1, hash2,
-                Collections.singletonList(path)));
+        return revisionList;
     }
 
-    @Nullable
-    public List<VcsFileRevision> getFileHistoryRevisionList(@NotNull VcsKey vcsKey, @NotNull FilePath filePath) {
-        AbstractVcs vcs = Objects.requireNonNull(getVcs(vcsKey));
-        VcsHistoryProvider historyProvider = Objects.requireNonNull(vcs.getVcsHistoryProvider());
-        try {
-            VcsHistorySession historySession = Objects.requireNonNull(historyProvider.createSessionFor(filePath));
-            return historySession.getRevisionList();
-        } catch (VcsException ex) {
-            ex.printStackTrace();
+    public RevisionMetadata getRevisionMetadata(String beforeContent, String afterContent) {
+        List<AbstractDelta<String>> deltas = getDiffBetweenRevisions(beforeContent, afterContent);
+        for (AbstractDelta<String> delta : deltas) {
+            // TODO
         }
         return null;
     }
 
-    @Nullable
-    private AbstractVcs getVcs(@Nullable VcsKey vcsKey) {
-        return vcsKey == null ? null : ProjectLevelVcsManager.getInstance(this.project).findVcsByName(vcsKey.getName());
+    private List<AbstractDelta<String>> getDiffBetweenRevisions(String beforeContent, String afterContent) {
+        List<String> left = new ArrayList<>(Collections.singleton(""));
+        if (beforeContent != null) {
+            left = List.of(beforeContent.split("\n"));
+        }
+        List<String> right = new ArrayList<>(Collections.singleton(""));
+        if (afterContent != null) {
+            right = List.of(afterContent.split("\n"));
+        }
+        Patch<String> patch = DiffUtils.diff(left, right);
+        return patch.getDeltas();
     }
 }
