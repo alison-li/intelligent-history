@@ -7,9 +7,16 @@ import com.github.difflib.patch.Patch;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.*;
+import com.intellij.openapi.vcs.changes.ContentRevision;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.history.VcsHistoryProvider;
 import com.intellij.openapi.vcs.history.VcsHistorySession;
+import com.intellij.vcs.log.Hash;
+import com.intellij.vcs.log.graph.VisibleGraph;
+import com.intellij.vcs.log.history.FileHistoryPaths;
+import com.intellij.vcs.log.history.FileHistoryUi;
+import com.intellij.vcs.log.ui.VcsLogInternalDataKeys;
+import git4idea.log.GitLogDiffHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,22 +36,21 @@ public final class DiffAnalyzerService {
         this.project = project;
     }
 
-    @Nullable
-    public List<VcsFileRevision> getFileHistoryRevisionList(@NotNull VcsKey vcsKey, @NotNull FilePath filePath) {
-        AbstractVcs vcs = Objects.requireNonNull(getVcs(vcsKey));
-        VcsHistoryProvider historyProvider = Objects.requireNonNull(vcs.getVcsHistoryProvider());
-        try {
-            VcsHistorySession historySession = Objects.requireNonNull(historyProvider.createSessionFor(filePath));
-            return historySession.getRevisionList();
-        } catch (VcsException ex) {
-            ex.printStackTrace();
+    public List<ContentRevision> getFileHistoryRevisionList(FileHistoryUi logUi) {
+        List<ContentRevision> revisionList = new ArrayList<>();
+        GitLogDiffHandler diffHandler = new GitLogDiffHandler(this.project);
+        VisibleGraph<Integer> visibleGraph = logUi.getDataPack().getVisibleGraph();
+        int rowsCount = visibleGraph.getVisibleCommitCount();
+        for (int i = 0; i < rowsCount; i++) {
+            Integer commitId = visibleGraph.getRowInfo(i).getCommit();
+            FilePath filePath = FileHistoryPaths.filePath(logUi.getDataPack(), commitId);
+            Hash commitHash = logUi.getLogData()
+                    .getMiniDetailsGetter()
+                    .getCommitData(commitId, Collections.singleton(commitId)).getId();
+            ContentRevision contentRevision = diffHandler.createContentRevision(filePath, commitHash);
+            revisionList.add(contentRevision);
         }
-        return null;
-    }
-
-    @Nullable
-    private AbstractVcs getVcs(@Nullable VcsKey vcsKey) {
-        return vcsKey == null ? null : ProjectLevelVcsManager.getInstance(this.project).findVcsByName(vcsKey.getName());
+        return revisionList;
     }
 
     public RevisionMetadata getRevisionMetadata(String beforeContent, String afterContent) {
