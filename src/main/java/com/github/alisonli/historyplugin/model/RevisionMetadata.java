@@ -1,22 +1,56 @@
 package com.github.alisonli.historyplugin.model;
 
-import com.intellij.openapi.vcs.history.VcsRevisionNumber;
-
 public class RevisionMetadata {
-    private final VcsRevisionNumber revisionNumber;
-    private final int docs;
-    private final int annotations;
-    private final int imports;
-    private final int newlines;
-    private final int other;
+    private final String beforeContent;
+    private final String afterContent;
+    private int docs;
+    private int annotations;
+    private int imports;
+    private int newlines;
+    private int other;
 
-    public RevisionMetadata(VcsRevisionNumber revisionNumber, int numDoc, int annotations, int imports,
-                            int newlines, int other, int others) {
-        this.revisionNumber = revisionNumber;
-        this.docs = numDoc;
+    public RevisionMetadata(String beforeContent, String afterContent) {
+        this.beforeContent = beforeContent;
+        this.afterContent = afterContent;
+    }
+
+    public void setDocs(int docs) {
+        this.docs = docs;
+    }
+
+    public void setAnnotations(int annotations) {
         this.annotations = annotations;
+    }
+
+    public void setImports(int imports) {
         this.imports = imports;
+    }
+
+    public void setNewlines(int newlines) {
         this.newlines = newlines;
+    }
+
+    public void setOther(int other) {
         this.other = other;
+    }
+
+    public int getDocs() {
+        return docs;
+    }
+
+    public int getAnnotations() {
+        return annotations;
+    }
+
+    public int getImports() {
+        return imports;
+    }
+
+    public int getNewlines() {
+        return newlines;
+    }
+
+    public int getOther() {
+        return other;
     }
 }
