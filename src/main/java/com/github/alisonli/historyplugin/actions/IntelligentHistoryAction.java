@@ -10,7 +10,6 @@ import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.actions.VcsContextUtil;
 import com.intellij.openapi.vcs.changes.ContentRevision;
 import com.intellij.openapi.vcs.changes.ui.ChangesViewContentManager;
-import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
@@ -23,6 +22,7 @@ import com.intellij.vcs.log.data.DataPackBase;
 import com.intellij.vcs.log.data.VcsLogStorage;
 import com.intellij.vcs.log.graph.PermanentGraph;
 import com.intellij.vcs.log.graph.VisibleGraph;
+import com.intellij.vcs.log.history.FileHistoryPaths;
 import com.intellij.vcs.log.history.FileHistoryUi;
 import com.intellij.vcs.log.history.FileHistoryUiFactory;
 import com.intellij.vcs.log.impl.HashImpl;
@@ -34,8 +34,6 @@ import com.intellij.vcs.log.util.VcsLogUtil;
 import com.intellij.vcs.log.visible.VisiblePack;
 import com.intellij.vcs.log.visible.filters.VcsLogFilterObject;
 import com.intellij.vcsUtil.VcsUtil;
-import git4idea.GitContentRevision;
-import git4idea.GitFileRevision;
 import git4idea.GitRevisionNumber;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -58,8 +56,6 @@ public class IntelligentHistoryAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = Objects.requireNonNull(e.getProject());
-        VcsKey vcsKey = Objects.requireNonNull(e.getData(VcsDataKeys.VCS));
-        FilePath filePath = Objects.requireNonNull(e.getData(VcsDataKeys.FILE_PATH));
         FileHistoryUi logUi = e.getRequiredData(VcsLogInternalDataKeys.FILE_HISTORY_UI);
 
         DiffAnalyzerService diffAnalyzerService = new DiffAnalyzerService(project);
@@ -84,7 +80,7 @@ public class IntelligentHistoryAction extends AnAction {
                         break;
                     }
                 } catch (VcsException ex) {
-                    ex.printStackTrace();
+                    LOG.error(ex);
                 }
             }
         }
@@ -111,11 +107,6 @@ public class IntelligentHistoryAction extends AnAction {
         Function<FileHistoryUi, String> fun = (__) -> path.getName() + suffix;
         ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow(ChangesViewContentManager.TOOLWINDOW_ID);
 
-        // TODO: Use my own factory?
-        FileHistoryUi intelligentFileHistoryUi = new FileHistoryUiFactory(path, root, hash).createLogUi(project, originalUi.getLogData());
-        // TODO: Need to look into this filter collection
-        VcsLogFilterCollection filters = VcsLogFilterObject.collection(VcsLogFilterObject.fromHashes(hashes));
-
         VcsLogManager logManager = VcsProjectLog.getInstance(project).getLogManager();
 
         Set<Integer> matchedCommits = new HashSet<>();
@@ -125,11 +116,17 @@ public class IntelligentHistoryAction extends AnAction {
             matchedCommits.add(logStorage.getCommitIndex(h, root));
         }
 
+        FileHistoryUi intelligentFileHistoryUi =
+                new FileHistoryUiFactory(path, root, hash).createLogUi(project, originalUi.getLogData());
+
+        VcsLogFilterCollection filters = VcsLogFilterObject.collection(VcsLogFilterObject.fromHashes(hashes));
+
         DataPackBase dataPackBase = originalUi.getDataPack().getDataPack();
         PermanentGraph<Integer> permanentGraph = ((DataPack) dataPackBase).getPermanentGraph();
         VisibleGraph<Integer> visibleGraph = permanentGraph.createVisibleGraph(PermanentGraph.SortType.Normal,
                 null, matchedCommits);
-        VisiblePack visiblePack = new VisiblePack(dataPackBase, visibleGraph, false, filters);
+        VisiblePack visiblePack = new VisiblePack(dataPackBase, visibleGraph, false, filters,
+                FileHistoryPaths.INSTANCE.getFileHistory(originalUi.getDataPack()));
         intelligentFileHistoryUi.setVisiblePack(visiblePack);
 
         ContentUtilEx.addTabbedContent(
