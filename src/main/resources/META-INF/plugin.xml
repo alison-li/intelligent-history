@@ -9,15 +9,10 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>Git4Idea</depends>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <projectService serviceImplementation="com.github.alisonli.historyplugin.services.DiffAnalyzerService"/>
-        <projectService serviceImplementation="com.github.alisonli.historyplugin.services.JiraFetcherService"/>
-    </extensions>
-
     <actions>
-        <action id="com.github.alisonli.historyplugin.actions.IntelligentHistoryAction"
-                class="com.github.alisonli.historyplugin.actions.IntelligentHistoryAction"
-                text="Show Intelligent History"
+        <action id="com.github.alisonli.historyplugin.actions.ImportantHistoryAction"
+                class="com.github.alisonli.historyplugin.actions.ImportantHistoryAction"
+                text="Show Important History"
                 description="De-emphasizes less important commits in the file history based on diff analysis."
                 icon="AllIcons.Actions.ShowHiddens">
             <add-to-group group-id="Vcs.FileHistory.Toolbar" anchor="after"
@@ -30,7 +25,7 @@
                                 matching Jira issue with the commits in file history."
                 icon="AllIcons.ToolbarDecorator.AddJira">
             <add-to-group group-id="Vcs.FileHistory.Toolbar" anchor="after"
-                          relative-to-action="com.github.alisonli.historyplugin.actions.IntelligentHistoryAction"/>
+                          relative-to-action="com.github.alisonli.historyplugin.actions.ImportantHistoryAction"/>
         </action>
     </actions>
 </idea-plugin>
