@@ -19,6 +19,9 @@ public class ImportantCommitsHighlighter implements VcsLogHighlighter {
     private final VirtualFile myRoot;
     private Set<Integer> myImportantCommits;
 
+    private static final Color REGULAR_TEXT_COLOR = new Color(235, 98, 52);
+    private static final Color DARK_TEXT_COLOR = new Color(235, 210, 52);
+
     public ImportantCommitsHighlighter(FileHistoryUi ui, @Nullable VcsLogData logData,
                                        VirtualFile root, @Nullable Set<Integer> commits) {
         myUi = ui;
@@ -28,14 +31,13 @@ public class ImportantCommitsHighlighter implements VcsLogHighlighter {
     }
 
     @Override
-    public @NotNull VcsCommitStyle getStyle(int commitId, @NotNull VcsShortCommitDetails commitDetails, boolean isSelected) {
+    public @NotNull VcsCommitStyle getStyle(int commitId, @NotNull VcsShortCommitDetails commitDetails,
+                                            boolean isSelected) {
         if (myImportantCommits.contains(commitId)) {
-            VcsCommitStyle foregroundStyle = VcsCommitStyleFactory.foreground(
-                    new JBColor(new Color(235, 64, 52), new Color(235, 64, 52))
-            );
+            VcsCommitStyle foregroundStyle = VcsCommitStyleFactory.foreground(new JBColor(REGULAR_TEXT_COLOR, DARK_TEXT_COLOR));
             return VcsCommitStyleFactory.combine(Arrays.asList(foregroundStyle, VcsCommitStyleFactory.bold()));
         }
-        return VcsCommitStyleFactory.bold();
+        return VcsCommitStyle.DEFAULT;
     }
 
     @Override

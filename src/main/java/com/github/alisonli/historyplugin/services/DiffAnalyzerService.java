@@ -8,10 +8,14 @@ import com.github.difflib.patch.Patch;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.LineTokenizer;
-import com.intellij.openapi.vcs.*;
+import com.intellij.openapi.vcs.FilePath;
+import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.ContentRevision;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.containers.ContainerUtil;
 import com.intellij.vcs.log.Hash;
+import com.intellij.vcs.log.VcsCommitMetadata;
+import com.intellij.vcs.log.VcsShortCommitDetails;
 import com.intellij.vcs.log.data.VcsLogStorage;
 import com.intellij.vcs.log.graph.VisibleGraph;
 import com.intellij.vcs.log.history.FileHistoryPaths;
@@ -96,6 +100,38 @@ public final class DiffAnalyzerService {
             revisionMetadata.mergeMetadata(tempMetadata);
         }
         return revisionMetadata;
+    }
+
+    public static Map<Integer, RevisionDiffMetadata> getRevisionMetadataMap(Project project, VirtualFile root, FileHistoryUi logUi)
+            throws VcsException {
+        VcsLogStorage logStorage = logUi.getLogData().getStorage();
+        GitLogDiffHandler diffHandler = new GitLogDiffHandler(project);
+        Set<Integer> commits =
+                FileHistoryPaths.INSTANCE.getFileHistory(logUi.getDataPack()).getCommitsToPathsMap().keySet();
+        List<VcsCommitMetadata> commitMetadataList = ContainerUtil.map(commits,
+                id -> logUi.getLogData().getMiniDetailsGetter().getCommitData(id, Collections.singleton(id)));
+        commitMetadataList.sort(Comparator.comparing(VcsShortCommitDetails::getCommitTime));
+
+        Map<Integer, RevisionDiffMetadata> metadataMap = new HashMap<>();
+        // The very first commit will end up with no comparison since the first commit is used as the
+        // "before" to compare with the second commit
+        Hash firstHash = commitMetadataList.get(0).getId();
+        ContentRevision firstContentRevision = diffHandler.createContentRevision(logUi.getPathInCommit(firstHash), firstHash);
+        String firstContent = firstContentRevision.getContent();
+        metadataMap.put(logStorage.getCommitIndex(firstHash, root), getRevisionMetadata("", firstContent));
+
+        for (int i = 0; i < commitMetadataList.size() - 1; i++) {
+            Hash hash1 = commitMetadataList.get(i).getId();
+            Hash hash2 = commitMetadataList.get(i + 1).getId();
+            ContentRevision contentRev1 = diffHandler.createContentRevision(logUi.getPathInCommit(hash1), hash1);
+            ContentRevision contentRev2 = diffHandler.createContentRevision(logUi.getPathInCommit(hash2), hash2);
+            String beforeContent = contentRev1.getContent();
+            String afterContent = contentRev2.getContent();
+            RevisionDiffMetadata metadata = getRevisionMetadata(beforeContent, afterContent);
+            metadataMap.put(logStorage.getCommitIndex(hash2, root), metadata);
+        }
+
+        return metadataMap;
     }
 
     private static RevisionDiffMetadata evaluateDeltaByLine(List<String> lineList) {

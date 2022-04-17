@@ -18,8 +18,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class ImportantHistoryAction extends AnAction {
-    private static final Logger LOG = Logger.getInstance(ImportantHistoryAction.class);
+public class HighlightImportantHistoryAction extends AnAction {
+    private static final Logger LOG = Logger.getInstance(HighlightImportantHistoryAction.class);
 
     @Override
     public void update(@NotNull AnActionEvent e) {
