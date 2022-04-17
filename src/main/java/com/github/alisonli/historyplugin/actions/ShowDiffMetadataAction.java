@@ -48,15 +48,7 @@ public class ShowDiffMetadataAction extends FileHistorySingleCommitAction<VcsFul
             Map<Integer, RevisionDiffMetadata> metadataMap =
                     DiffAnalyzerService.getRevisionMetadataMap(project, detail.getRoot(), ui);
             RevisionDiffMetadata diffMetadata = metadataMap.get(commitId);
-
-            String docs = String.format("Documentation: %d", diffMetadata.getDocs());
-            String annotations = String.format("Annotation: %d", diffMetadata.getAnnotations());
-            String imports = String.format("Import: %d", diffMetadata.getImports());
-            String newlines = String.format("Newline: %d", diffMetadata.getNewlines());
-            String other = String.format("Other: %d", diffMetadata.getOther());
-            String diffMetadataText = String.format("%s <br/> %s <br/> %s <br/> %s <br/> %s", docs, annotations, imports, newlines, other);
-
-            JBLabel popupContent = new JBLabel("<html>" + diffMetadataText + "</html>");
+            JBLabel popupContent = new JBLabel("<html>" + diffMetadata + "</html>");
             Balloon balloon = JBPopupFactory.getInstance()
                     .createBalloonBuilder(popupContent)
                     .setTitle("Diff Metadata for Commit " + detail.getId().toShortString())
