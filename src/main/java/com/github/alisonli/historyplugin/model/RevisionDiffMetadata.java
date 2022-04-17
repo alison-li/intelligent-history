@@ -14,7 +14,8 @@ public class RevisionDiffMetadata {
         this.afterContent = afterContent;
     }
 
-    public RevisionDiffMetadata(String beforeContent, String afterContent, int docs, int annotations, int imports, int newlines, int other) {
+    public RevisionDiffMetadata(String beforeContent, String afterContent, int docs, int annotations, int imports,
+                                int newlines, int other) {
         this.beforeContent = beforeContent;
         this.afterContent = afterContent;
         this.docs = docs;

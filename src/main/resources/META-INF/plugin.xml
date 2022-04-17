@@ -10,13 +10,21 @@
     <depends>Git4Idea</depends>
 
     <actions>
-        <action id="com.github.alisonli.historyplugin.actions.ImportantHistoryAction"
-                class="com.github.alisonli.historyplugin.actions.ImportantHistoryAction"
-                text="Show Important History"
-                description="De-emphasizes less important commits in the file history based on diff analysis."
-                icon="AllIcons.Actions.ShowHiddens">
+        <action id="com.github.alisonli.historyplugin.actions.HighlightImportantHistoryAction"
+                class="com.github.alisonli.historyplugin.actions.HighlightImportantHistoryAction"
+                text="Highlight Important Changes"
+                description="Emphasizes important commits in the file history based on diff analysis."
+                icon="AllIcons.Nodes.Jsf.Renderer">
             <add-to-group group-id="Vcs.FileHistory.Toolbar" anchor="after"
                           relative-to-action="Vcs.FileHistory.PresentationSettings"/>
+        </action>
+        <action id="com.github.alisonli.historyplugin.actions.ShowDiffMetadataAction"
+                class="com.github.alisonli.historyplugin.actions.ShowDiffMetadataAction"
+                text="Show Revision Diff Metadata"
+                description="Displays a summary of changes made in this commit."
+                icon="AllIcons.Actions.ShowHiddens">
+            <add-to-group group-id="Vcs.FileHistory.Toolbar" anchor="after"
+                          relative-to-action="com.github.alisonli.historyplugin.actions.HighlightImportantHistoryAction"/>
         </action>
         <action id="com.github.alisonli.historyplugin.actions.JiraInHistoryAction"
                 class="com.github.alisonli.historyplugin.actions.JiraInHistoryAction"
@@ -25,7 +33,7 @@
                                 matching Jira issue with the commits in file history."
                 icon="AllIcons.ToolbarDecorator.AddJira">
             <add-to-group group-id="Vcs.FileHistory.Toolbar" anchor="after"
-                          relative-to-action="com.github.alisonli.historyplugin.actions.ImportantHistoryAction"/>
+                          relative-to-action="com.github.alisonli.historyplugin.actions.ShowDiffMetadataAction"/>
         </action>
     </actions>
 </idea-plugin>
