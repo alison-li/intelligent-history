@@ -1,7 +1,6 @@
 package com.github.alisonli.historyplugin.actions;
 
 import com.github.alisonli.historyplugin.highlighters.HighlighterFactory;
-import com.github.alisonli.historyplugin.highlighters.ImportantCommitsHighlighter;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.actionSystem.ToggleAction;
@@ -38,13 +37,13 @@ public class HighlightImportantHistoryAction extends ToggleAction {
     public void setSelected(@NotNull AnActionEvent e, boolean state) {
         Project project = Objects.requireNonNull(e.getProject());
         List<FilePath> selectedFiles = VcsContextUtil.selectedFilePaths(e.getDataContext());
-        VirtualFile root = VcsLogUtil.getActualRoot(project, selectedFiles.get(0));
+        FilePath path = selectedFiles.get(0);
+        VirtualFile root = VcsLogUtil.getActualRoot(project, path);
         FileHistoryUi logUi = e.getRequiredData(VcsLogInternalDataKeys.FILE_HISTORY_UI);
-        VcsLogHighlighter highlighter =
-                new HighlighterFactory(project, root, logUi).getHighlighter(HighlighterFactory.Type.IMPORTANT);
+        VcsLogHighlighter highlighter = HighlighterFactory.getHighlighter(project, root, path, logUi);
         if (!state) {
             logUi.getTable().removeHighlighter(highlighter);
-            ImportantCommitsHighlighter.disposeInstance();
+            HighlighterFactory.disposeHighlighter(path);
         } else {
             logUi.getTable().addHighlighter(highlighter);
         }

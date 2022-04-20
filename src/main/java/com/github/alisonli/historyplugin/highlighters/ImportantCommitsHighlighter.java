@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Set;
 
 public class ImportantCommitsHighlighter implements VcsLogHighlighter {
-    private static ImportantCommitsHighlighter INSTANCE;
     private final FileHistoryUi myUi;
     private final VcsLogData myLogData;
     private final VirtualFile myRoot;
@@ -23,24 +22,12 @@ public class ImportantCommitsHighlighter implements VcsLogHighlighter {
     private static final Color REGULAR_TEXT_COLOR = new Color(235, 98, 52);
     private static final Color DARK_TEXT_COLOR = new Color(235, 210, 52);
 
-    private ImportantCommitsHighlighter(FileHistoryUi ui, @Nullable VcsLogData logData,
+    public ImportantCommitsHighlighter(FileHistoryUi ui, @Nullable VcsLogData logData,
                                        VirtualFile root, @Nullable Set<Integer> commits) {
         myUi = ui;
         myLogData = logData;
         myRoot = root;
         myImportantCommits = commits;
-    }
-
-    public static ImportantCommitsHighlighter getInstance(FileHistoryUi ui, @Nullable VcsLogData logData,
-                                                   VirtualFile root, @Nullable Set<Integer> commits) {
-        if (INSTANCE == null) {
-            INSTANCE = new ImportantCommitsHighlighter(ui, logData, root, commits);
-        }
-        return INSTANCE;
-    }
-
-    public static void disposeInstance() {
-        INSTANCE = null;
     }
 
     @Override
