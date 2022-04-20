@@ -23,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.util.List;
-import java.util.Map;
 
 public class ShowDiffMetadataAction extends FileHistorySingleCommitAction<VcsFullCommitDetails> {
     private static final Logger LOG = Logger.getInstance(ShowDiffMetadataAction.class);
@@ -44,14 +43,12 @@ public class ShowDiffMetadataAction extends FileHistorySingleCommitAction<VcsFul
     protected void performAction(@NotNull Project project, @NotNull FileHistoryUi ui,
                                  @NotNull VcsFullCommitDetails detail, @NotNull AnActionEvent e) {
         try {
-            int commitId = ui.getLogData().getStorage().getCommitIndex(detail.getId(), detail.getRoot());
-            Map<Integer, RevisionDiffMetadata> metadataMap =
-                    DiffAnalyzerService.getRevisionMetadataMap(project, detail.getRoot(), ui);
-            RevisionDiffMetadata diffMetadata = metadataMap.get(commitId);
+            int id = ui.getLogData().getStorage().getCommitIndex(detail.getId(), detail.getRoot());
+            RevisionDiffMetadata diffMetadata = DiffAnalyzerService.getRevisionMetadataForId(project, detail.getRoot(), ui, id);
             JBLabel popupContent = new JBLabel("<html>" + diffMetadata + "</html>");
             Balloon balloon = JBPopupFactory.getInstance()
                     .createBalloonBuilder(popupContent)
-                    .setTitle("Diff Metadata for Commit " + detail.getId().toShortString())
+                    .setTitle("Metadata for Commit " + detail.getId().toShortString())
                     .setFillColor(BACKGROUND)
                     .setBorderColor(BORDER)
                     .setAnimationCycle(200)
