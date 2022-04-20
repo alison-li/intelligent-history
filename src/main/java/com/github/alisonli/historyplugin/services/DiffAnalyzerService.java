@@ -60,6 +60,44 @@ public final class DiffAnalyzerService {
         return importantCommits;
     }
 
+    public static RevisionDiffMetadata getRevisionMetadataForId(Project project, VirtualFile root,
+                                                                FileHistoryUi logUi, int id)
+            throws VcsException {
+        Map<Integer, RevisionDiffMetadata> metadataMap = getRevisionMetadataMap(project, root, logUi);
+        return metadataMap.get(id);
+    }
+
+    private static Map<Integer, RevisionDiffMetadata> getRevisionMetadataMap(Project project, VirtualFile root, FileHistoryUi logUi)
+            throws VcsException {
+        VcsLogStorage logStorage = logUi.getLogData().getStorage();
+        GitLogDiffHandler diffHandler = new GitLogDiffHandler(project);
+        Set<Integer> commits =
+                FileHistoryPaths.INSTANCE.getFileHistory(logUi.getDataPack()).getCommitsToPathsMap().keySet();
+        List<VcsCommitMetadata> commitMetadataList = ContainerUtil.map(commits,
+                id -> logUi.getLogData().getMiniDetailsGetter().getCommitData(id, Collections.singleton(id)));
+        commitMetadataList.sort(Comparator.comparing(VcsShortCommitDetails::getCommitTime));
+
+        Map<Integer, RevisionDiffMetadata> metadataMap = new HashMap<>();
+        // Compare the first commit with an empty string.
+        Hash firstHash = commitMetadataList.get(0).getId();
+        ContentRevision firstContentRevision = diffHandler.createContentRevision(logUi.getPathInCommit(firstHash), firstHash);
+        String firstContent = firstContentRevision.getContent();
+        metadataMap.put(logStorage.getCommitIndex(firstHash, root), getRevisionMetadata("", firstContent));
+
+        for (int i = 0; i < commitMetadataList.size() - 1; i++) {
+            Hash hash1 = commitMetadataList.get(i).getId();
+            Hash hash2 = commitMetadataList.get(i + 1).getId();
+            ContentRevision contentRev1 = diffHandler.createContentRevision(logUi.getPathInCommit(hash1), hash1);
+            ContentRevision contentRev2 = diffHandler.createContentRevision(logUi.getPathInCommit(hash2), hash2);
+            String beforeContent = contentRev1.getContent();
+            String afterContent = contentRev2.getContent();
+            RevisionDiffMetadata metadata = getRevisionMetadata(beforeContent, afterContent);
+            metadataMap.put(logStorage.getCommitIndex(hash2, root), metadata);
+        }
+
+        return metadataMap;
+    }
+
     private static List<ContentRevision> getFileHistoryRevisionList(Project project, FileHistoryUi logUi) {
         List<ContentRevision> revisionList = new ArrayList<>();
         GitLogDiffHandler diffHandler = new GitLogDiffHandler(project);
@@ -100,38 +138,6 @@ public final class DiffAnalyzerService {
             revisionMetadata.mergeMetadata(tempMetadata);
         }
         return revisionMetadata;
-    }
-
-    public static Map<Integer, RevisionDiffMetadata> getRevisionMetadataMap(Project project, VirtualFile root, FileHistoryUi logUi)
-            throws VcsException {
-        VcsLogStorage logStorage = logUi.getLogData().getStorage();
-        GitLogDiffHandler diffHandler = new GitLogDiffHandler(project);
-        Set<Integer> commits =
-                FileHistoryPaths.INSTANCE.getFileHistory(logUi.getDataPack()).getCommitsToPathsMap().keySet();
-        List<VcsCommitMetadata> commitMetadataList = ContainerUtil.map(commits,
-                id -> logUi.getLogData().getMiniDetailsGetter().getCommitData(id, Collections.singleton(id)));
-        commitMetadataList.sort(Comparator.comparing(VcsShortCommitDetails::getCommitTime));
-
-        Map<Integer, RevisionDiffMetadata> metadataMap = new HashMap<>();
-        // The very first commit will end up with no comparison since the first commit is used as the
-        // "before" to compare with the second commit
-        Hash firstHash = commitMetadataList.get(0).getId();
-        ContentRevision firstContentRevision = diffHandler.createContentRevision(logUi.getPathInCommit(firstHash), firstHash);
-        String firstContent = firstContentRevision.getContent();
-        metadataMap.put(logStorage.getCommitIndex(firstHash, root), getRevisionMetadata("", firstContent));
-
-        for (int i = 0; i < commitMetadataList.size() - 1; i++) {
-            Hash hash1 = commitMetadataList.get(i).getId();
-            Hash hash2 = commitMetadataList.get(i + 1).getId();
-            ContentRevision contentRev1 = diffHandler.createContentRevision(logUi.getPathInCommit(hash1), hash1);
-            ContentRevision contentRev2 = diffHandler.createContentRevision(logUi.getPathInCommit(hash2), hash2);
-            String beforeContent = contentRev1.getContent();
-            String afterContent = contentRev2.getContent();
-            RevisionDiffMetadata metadata = getRevisionMetadata(beforeContent, afterContent);
-            metadataMap.put(logStorage.getCommitIndex(hash2, root), metadata);
-        }
-
-        return metadataMap;
     }
 
     private static RevisionDiffMetadata evaluateDeltaByLine(List<String> lineList) {
