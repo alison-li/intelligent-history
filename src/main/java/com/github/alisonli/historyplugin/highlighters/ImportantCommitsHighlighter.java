@@ -2,6 +2,7 @@ package com.github.alisonli.historyplugin.highlighters;
 
 import com.github.alisonli.historyplugin.services.DiffAnalyzerService;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.ui.Gray;
 import com.intellij.ui.JBColor;
 import com.intellij.vcs.log.*;
 import com.intellij.vcs.log.data.VcsLogData;
@@ -9,18 +10,16 @@ import com.intellij.vcs.log.history.FileHistoryUi;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
-import java.util.Arrays;
 import java.util.Set;
 
 public class ImportantCommitsHighlighter implements VcsLogHighlighter {
+    public static final JBColor TRIVIAL_COMMIT_FOREGROUND = JBColor.namedColor(
+            "VersionControl.Log.Commit.unmatchedForeground",
+            new JBColor(Gray._128, Gray._96));
     private final FileHistoryUi myUi;
     private final VcsLogData myLogData;
     private final VirtualFile myRoot;
     private Set<Integer> myImportantCommits;
-
-    private static final Color REGULAR_TEXT_COLOR = new Color(235, 98, 52);
-    private static final Color DARK_TEXT_COLOR = new Color(235, 210, 52);
 
     public ImportantCommitsHighlighter(FileHistoryUi ui, @Nullable VcsLogData logData,
                                        VirtualFile root, @Nullable Set<Integer> commits) {
@@ -33,9 +32,8 @@ public class ImportantCommitsHighlighter implements VcsLogHighlighter {
     @Override
     public @NotNull VcsCommitStyle getStyle(int commitId, @NotNull VcsShortCommitDetails commitDetails,
                                             boolean isSelected) {
-        if (myImportantCommits.contains(commitId)) {
-            VcsCommitStyle foregroundStyle = VcsCommitStyleFactory.foreground(new JBColor(REGULAR_TEXT_COLOR, DARK_TEXT_COLOR));
-            return VcsCommitStyleFactory.combine(Arrays.asList(foregroundStyle, VcsCommitStyleFactory.bold()));
+        if (!myImportantCommits.contains(commitId)) {
+            return VcsCommitStyleFactory.foreground(TRIVIAL_COMMIT_FOREGROUND);
         }
         return VcsCommitStyle.DEFAULT;
     }
