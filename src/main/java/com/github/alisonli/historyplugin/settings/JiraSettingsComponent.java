@@ -9,14 +9,14 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 
-public class JiraSettings {
+public class JiraSettingsComponent {
     private JPanel rootPanel;
     private JTextField endpointURLField;
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JiraConfig config;
 
-    public void createGUI(Project project) {
+    public void createUIComponents(Project project) {
         this.config = JiraConfig.getInstance(project);
         endpointURLField.setText(config.getEndpointURL());
         usernameField.setText(config.getUsername());
@@ -33,7 +33,7 @@ public class JiraSettings {
         return modified;
     }
 
-    void apply() throws ConfigurationException {
+    public void apply() throws ConfigurationException {
         try {
             URL url = new URL(endpointURLField.getText());
             url.toURI();
@@ -45,7 +45,7 @@ public class JiraSettings {
         config.setPassword(String.valueOf(passwordField.getPassword()));
     }
 
-    JPanel getRootPanel() {
+    public JPanel getContent() {
         return rootPanel;
     }
 }

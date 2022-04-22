@@ -3,7 +3,6 @@ package com.github.alisonli.historyplugin.settings;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.NlsContexts;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +11,7 @@ import javax.swing.*;
 
 public class JiraConfigurable implements SearchableConfigurable {
     private final Project project;
-    private JiraSettings settings;
+    private JiraSettingsComponent settings;
 
     public JiraConfigurable(Project project) {
         this.project = project;
@@ -24,15 +23,15 @@ public class JiraConfigurable implements SearchableConfigurable {
     }
 
     @Override
-    public @NlsContexts.ConfigurableName String getDisplayName() {
-        return "History Plugin";
+    public String getDisplayName() {
+        return "Intelligent History";
     }
 
     @Override
     public @Nullable JComponent createComponent() {
-        this.settings = new JiraSettings();
-        this.settings.createGUI(project);
-        return this.settings.getRootPanel();
+        this.settings = new JiraSettingsComponent();
+        this.settings.createUIComponents(project);
+        return this.settings.getContent();
     }
 
     @Override
