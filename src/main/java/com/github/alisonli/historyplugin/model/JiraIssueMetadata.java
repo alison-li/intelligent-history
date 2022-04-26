@@ -3,7 +3,9 @@ package com.github.alisonli.historyplugin.model;
 import com.intellij.vcs.log.VcsFullCommitDetails;
 
 public class JiraIssueMetadata {
+    @SuppressWarnings({"unused", "FieldCanBeLocal"})
     private final VcsFullCommitDetails detail;
+    private String issueKey;
     private String title;
     private String description;
     private String priority;
@@ -15,10 +17,17 @@ public class JiraIssueMetadata {
     private int comments; // excludes bot comments
     private int commitAuthorComments; // proportion of comments that are by the commit author
     private int peopleInvolved; // total number of people involved in issue, including commenters and assignee
-    private boolean isEmpty;
 
     public JiraIssueMetadata(VcsFullCommitDetails detail) {
         this.detail = detail;
+    }
+
+    public String getIssueKey() {
+        return issueKey;
+    }
+
+    public void setIssueKey(String issueKey) {
+        this.issueKey = issueKey;
     }
 
     public String getTitle() {
@@ -107,14 +116,6 @@ public class JiraIssueMetadata {
 
     public void setPeopleInvolved(int peopleInvolved) {
         this.peopleInvolved = peopleInvolved;
-    }
-
-    public boolean isEmpty() {
-        return isEmpty;
-    }
-
-    public void setEmpty(boolean isEmpty) {
-        this.isEmpty = isEmpty;
     }
 
     @Override

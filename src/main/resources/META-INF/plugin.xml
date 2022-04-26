@@ -14,9 +14,12 @@
                              instance="com.github.alisonli.historyplugin.settings.JiraConfigurable"/>
         <projectService serviceImplementation="com.github.alisonli.historyplugin.settings.JiraConfig"/>
         <toolWindow id="Jira" secondary="false" icon="MyIcons.Jira" anchor="left"
-                    doNotActivateOnStart="true"
+                    doNotActivateOnStart="true" canCloseContents="true"
                     factoryClass="com.github.alisonli.historyplugin.components.JiraIssuePanelFactory"/>
-
+        <notificationGroup
+                displayType="BALLOON"
+                id="Intelligent History"
+        />
     </extensions>
 
     <actions>

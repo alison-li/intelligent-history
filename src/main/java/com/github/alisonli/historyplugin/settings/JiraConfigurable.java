@@ -29,9 +29,9 @@ public class JiraConfigurable implements SearchableConfigurable {
 
     @Override
     public @Nullable JComponent createComponent() {
-        this.settings = new JiraSettingsComponent();
-        this.settings.createUIComponents(project);
-        return this.settings.getContent();
+        settings = new JiraSettingsComponent();
+        settings.createUIComponents(project);
+        return settings.getContent();
     }
 
     @Override

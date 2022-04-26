@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.vcs.log.VcsFullCommitDetails;
@@ -15,6 +16,7 @@ import com.intellij.vcs.log.history.FileHistoryUi;
 import com.intellij.vcs.log.ui.actions.history.FileHistorySingleCommitAction;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,22 +36,20 @@ public class ShowJiraMetadataAction extends FileHistorySingleCommitAction<VcsFul
     protected void performAction(@NotNull Project project, @NotNull FileHistoryUi ui,
                                  @NotNull VcsFullCommitDetails detail, @NotNull AnActionEvent e) {
         JiraFetcherService jiraService = new JiraFetcherService(project);
-        // JiraIssueMetadata jiraIssueMetadata = jiraService.getJiraIssueMetadata(detail);
-
-        ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Jira");
-        Objects.requireNonNull(toolWindow).show();
-//        ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
-//        JiraIssuePanel updatedPanel = new JiraIssuePanel();
-//        // TODO: Waiting on JetBrains' reply in forum
-//        updatedPanel.createUIComponents(jiraIssueMetadata.getTitle(), jiraIssueMetadata.getDescription());
-//        Content content = contentFactory.createContent(updatedPanel.getContent(),
-//                "Issue Metadata", false);
-//        toolWindow.getContentManager().setSelectedContent(content);
-
-//        if (jiraIssueMetadata.isEmpty()) {
-//            // TOD0
-//        } else {
-//            // TODO
-//        }
+        JiraIssueMetadata issueMetadata = jiraService.getJiraIssueMetadata(detail);
+        if (issueMetadata != null) {
+            ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Jira");
+            JiraIssuePanel toolWindowBuilder = new JiraIssuePanel();
+            toolWindowBuilder.setTitle(issueMetadata.getTitle());
+            toolWindowBuilder.setBodyText(issueMetadata.getDescription());
+            JBScrollPane toolWindowContent = new JBScrollPane(toolWindowBuilder.getContent());
+            toolWindowContent.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+            ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
+            Content content = contentFactory.createContent(toolWindowContent, issueMetadata.getIssueKey(), false);
+            content.setPreferredFocusableComponent(toolWindowContent);
+            content.setDisposer(toolWindowBuilder);
+            Objects.requireNonNull(toolWindow).getContentManager().addContent(content);
+            Objects.requireNonNull(toolWindow).show();
+        }
     }
 }
