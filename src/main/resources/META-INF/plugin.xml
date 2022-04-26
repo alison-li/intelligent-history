@@ -9,6 +9,19 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>Git4Idea</depends>
 
+    <extensions defaultExtensionNs="com.intellij">
+        <projectConfigurable groupId="tools" displayName="Intelligent History"
+                             instance="com.github.alisonli.historyplugin.settings.JiraConfigurable"/>
+        <projectService serviceImplementation="com.github.alisonli.historyplugin.settings.JiraConfig"/>
+        <toolWindow id="Jira" secondary="false" icon="MyIcons.Jira" anchor="left"
+                    doNotActivateOnStart="true" canCloseContents="true"
+                    factoryClass="com.github.alisonli.historyplugin.components.JiraIssuePanelFactory"/>
+        <notificationGroup
+                displayType="BALLOON"
+                id="Intelligent History"
+        />
+    </extensions>
+
     <actions>
         <action id="com.github.alisonli.historyplugin.actions.HighlightImportantHistoryAction"
                 class="com.github.alisonli.historyplugin.actions.HighlightImportantHistoryAction"
@@ -27,7 +40,7 @@
                           relative-to-action="com.github.alisonli.historyplugin.actions.HighlightImportantHistoryAction"/>
         </action>
         <action id="com.github.alisonli.historyplugin.actions.JiraInHistoryAction"
-                class="com.github.alisonli.historyplugin.actions.JiraInHistoryAction"
+                class="com.github.alisonli.historyplugin.actions.ShowJiraMetadataAction"
                 text="Extract from Jira"
                 description="Extracts Jira issue keys from commit messages and interleaves the information from the
                                 matching Jira issue with the commits in file history."
