@@ -46,12 +46,6 @@ public class JiraSettingsComponent {
         config.setPassword(String.valueOf(passwordField.getPassword()));
     }
 
-    public void reset() {
-        config.setEndpointURL("");
-        config.setUsername("");
-        config.setPassword("");
-    }
-
     public JPanel getContent() {
         return rootPanel;
     }
