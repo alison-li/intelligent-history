@@ -20,6 +20,7 @@ public class JiraSettingsComponent {
         this.config = JiraConfig.getInstance(project);
         endpointURLField.setText(config.getEndpointURL());
         usernameField.setText(config.getUsername());
+        passwordField.setText(config.getPassword());
     }
 
     boolean isModified() {
@@ -43,6 +44,12 @@ public class JiraSettingsComponent {
         config.setEndpointURL(endpointURLField.getText());
         config.setUsername(usernameField.getText());
         config.setPassword(String.valueOf(passwordField.getPassword()));
+    }
+
+    public void reset() {
+        config.setEndpointURL("");
+        config.setUsername("");
+        config.setPassword("");
     }
 
     public JPanel getContent() {

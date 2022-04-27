@@ -35,9 +35,9 @@ public final class JiraFetcherService {
     public JiraIssueMetadata getJiraIssueMetadata(VcsFullCommitDetails detail) {
         String issueKey = extractJiraIssueKey(detail.getSubject());
         JiraIssueMetadata issueMetadata = new JiraIssueMetadata(detail);
-        if (config.getEndpointURL().isEmpty()
-                || config.getUsername() == null
-                || config.getPassword() == null) {
+        if (isNullOrEmpty(config.getEndpointURL())
+                || isNullOrEmpty(config.getUsername())
+                || isNullOrEmpty(config.getPassword())) {
             NotificationManager.showJiraConfigNotFound(project);
         } else if (issueKey.equals(ISSUE_KEY_NOT_FOUND)) {
             NotificationManager.showIssueNotFound(project, detail.getId().toShortString());
@@ -90,5 +90,9 @@ public final class JiraFetcherService {
             return ISSUE_KEY_NOT_FOUND;
         }
         return results.get(0).group(1);
+    }
+
+    private boolean isNullOrEmpty(String s) {
+        return s == null || s.length() == 0;
     }
 }
