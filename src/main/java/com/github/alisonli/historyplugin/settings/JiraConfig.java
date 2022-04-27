@@ -7,6 +7,8 @@ import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
+import com.intellij.util.xmlb.XmlSerializerUtil;
+import com.intellij.util.xmlb.annotations.Transient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +32,9 @@ public class JiraConfig implements PersistentStateComponent<JiraConfig> {
     }
 
     @Override
-    public void loadState(@NotNull JiraConfig state) { }
+    public void loadState(@NotNull JiraConfig state) {
+        XmlSerializerUtil.copyBean(state, this);
+    }
 
     public String getEndpointURL() {
         return this.endpointURL;
@@ -48,6 +52,7 @@ public class JiraConfig implements PersistentStateComponent<JiraConfig> {
         this.username = username;
     }
 
+    @Transient
     public String getPassword() {
         CredentialAttributes credentialAttributes = createCredentialAttributes(this.endpointURL);
         return PasswordSafe.getInstance().getPassword(credentialAttributes);
