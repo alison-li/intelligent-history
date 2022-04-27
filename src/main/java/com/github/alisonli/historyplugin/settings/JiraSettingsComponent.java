@@ -20,6 +20,7 @@ public class JiraSettingsComponent {
         this.config = JiraConfig.getInstance(project);
         endpointURLField.setText(config.getEndpointURL());
         usernameField.setText(config.getUsername());
+        passwordField.setText(config.getPassword());
     }
 
     boolean isModified() {
