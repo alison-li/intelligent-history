@@ -1,4 +1,4 @@
-package com.github.alisonli.historyplugin.settings;
+package com.alisli.intelligenthistory.settings;
 
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
@@ -19,7 +19,7 @@ public class JiraConfigurable implements SearchableConfigurable {
 
     @Override
     public @NotNull @NonNls String getId() {
-        return "com.github.alisonli.historyplugin";
+        return "com.alisli.intelligenthistory";
     }
 
     @Override

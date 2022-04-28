@@ -1,7 +1,8 @@
-package com.github.alisonli.historyplugin.actions;
+package com.alisli.intelligenthistory.actions;
 
-import com.github.alisonli.historyplugin.model.RevisionDiffMetadata;
-import com.github.alisonli.historyplugin.services.DiffAnalyzerService;
+import com.alisli.intelligenthistory.IntelligentHistoryBundle;
+import com.alisli.intelligenthistory.model.RevisionDiffMetadata;
+import com.alisli.intelligenthistory.services.DiffAnalyzerService;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -48,7 +49,7 @@ public class ShowDiffMetadataAction extends FileHistorySingleCommitAction<VcsFul
             JBLabel popupContent = new JBLabel("<html>" + diffMetadata + "</html>");
             Balloon balloon = JBPopupFactory.getInstance()
                     .createBalloonBuilder(popupContent)
-                    .setTitle("Metadata for Commit " + detail.getId().toShortString())
+                    .setTitle(IntelligentHistoryBundle.message("ih.diff.metadata.popup.title", detail.getId().toShortString()))
                     .setFillColor(BACKGROUND)
                     .setBorderColor(BORDER)
                     .setAnimationCycle(200)

@@ -1,8 +1,8 @@
-package com.github.alisonli.historyplugin.services;
+package com.alisli.intelligenthistory.services;
 
-import com.github.alisonli.historyplugin.model.JiraIssueMetadata;
-import com.github.alisonli.historyplugin.notification.NotificationManager;
-import com.github.alisonli.historyplugin.settings.JiraConfig;
+import com.alisli.intelligenthistory.notification.NotificationManager;
+import com.alisli.intelligenthistory.settings.JiraConfig;
+import com.alisli.intelligenthistory.model.JiraIssueMetadata;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.vcs.log.VcsFullCommitDetails;
@@ -20,7 +20,6 @@ public final class JiraFetcherService {
     private static final Logger LOG = Logger.getInstance(JiraFetcherService.class);
     private static final String BOT_NAME_PATTERN = "(.*)((\\b([Bb]ot|BOT))|(([Bb]ot|BOT)\\b))(.*)";
     private static final String JIRA_ISSUE_KEY = "([A-Z]+-\\d+)";
-    private static final String ISSUE_KEY_NOT_FOUND = "KEY_NOT_FOUND";
     private final Project project;
     private final JiraConfig config;
     private final JiraClient client;
@@ -34,15 +33,15 @@ public final class JiraFetcherService {
 
     public JiraIssueMetadata getJiraIssueMetadata(VcsFullCommitDetails detail) {
         String issueKey = extractJiraIssueKey(detail.getSubject());
-        JiraIssueMetadata issueMetadata = new JiraIssueMetadata(detail);
         if (isNullOrEmpty(config.getEndpointURL())
                 || isNullOrEmpty(config.getUsername())
                 || isNullOrEmpty(config.getPassword())) {
             NotificationManager.showJiraConfigNotFound(project);
-        } else if (issueKey.equals(ISSUE_KEY_NOT_FOUND)) {
+        } else if (issueKey == null) {
             NotificationManager.showIssueNotFound(project, detail.getId().toShortString());
         } else {
             try {
+                JiraIssueMetadata issueMetadata = new JiraIssueMetadata(detail);
                 issueMetadata.setIssueKey(issueKey);
                 Issue issue = client.getIssue(issueKey);
                 List<Comment> commentsExcludeBots = new ArrayList<>();
@@ -87,7 +86,7 @@ public final class JiraFetcherService {
                 .results()
                 .collect(Collectors.toList());
         if (results.isEmpty()) {
-            return ISSUE_KEY_NOT_FOUND;
+            return null;
         }
         return results.get(0).group(1);
     }

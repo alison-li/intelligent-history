@@ -1,5 +1,6 @@
-package com.github.alisonli.historyplugin.notification;
+package com.alisli.intelligenthistory.notification;
 
+import com.alisli.intelligenthistory.IntelligentHistoryBundle;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationGroupManager;
@@ -9,12 +10,12 @@ import icons.MyIcons;
 
 public class NotificationManager {
     private static final NotificationGroup GROUP = NotificationGroupManager.getInstance().getNotificationGroup(
-            "Intelligent History");
+            IntelligentHistoryBundle.message("ih.notification.group"));
 
     public static void showIssueNotFound(Project project, String hash) {
         final Notification notification =
-                GROUP.createNotification("Jira issue key not found",
-                        "A Jira issue key could not be found for commit " + hash +".",
+                GROUP.createNotification(IntelligentHistoryBundle.message("ih.notification.issue.error.title"),
+                        IntelligentHistoryBundle.message("ih.notification.issue.error.content", hash),
                         NotificationType.INFORMATION)
                         .setIcon(MyIcons.Jira);
         notification.notify(project);
@@ -22,8 +23,8 @@ public class NotificationManager {
 
     public static void showJiraConfigNotFound(Project project) {
         final Notification notification =
-                GROUP.createNotification("Jira configuration not set",
-                        "Jira endpoint URL, username, and/or password not configured.",
+                GROUP.createNotification(IntelligentHistoryBundle.message("ih.notification.config.error.title"),
+                        IntelligentHistoryBundle.message("ih.notification.config.error.content"),
                         NotificationType.WARNING)
                         .setIcon(MyIcons.Jira);
         notification.notify(project);

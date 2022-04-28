@@ -1,20 +1,18 @@
-package com.github.alisonli.historyplugin.components;
+package com.alisli.intelligenthistory.components;
 
+import com.alisli.intelligenthistory.IntelligentHistoryBundle;
 import com.intellij.openapi.Disposable;
 
 import javax.swing.*;
 
 public class JiraIssuePanel implements Disposable {
-    private static final String DEFAULT_BODY =
-            "If available for a commit, this is where Jira issue information will appear.\n" +
-            "Please ensure your credentials are configured in plugin settings";
     private JPanel rootPanel;
     private JLabel title;
     private JTextPane bodyText;
 
     public JiraIssuePanel() {
         this.setTitle("");
-        this.setBodyText(DEFAULT_BODY);
+        this.setBodyText(IntelligentHistoryBundle.message("ih.panel.startup.text"));
     }
 
     public void setTitle(String title) {

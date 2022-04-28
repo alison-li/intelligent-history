@@ -1,8 +1,8 @@
-package com.github.alisonli.historyplugin.actions;
+package com.alisli.intelligenthistory.actions;
 
-import com.github.alisonli.historyplugin.components.JiraIssuePanel;
-import com.github.alisonli.historyplugin.model.JiraIssueMetadata;
-import com.github.alisonli.historyplugin.services.JiraFetcherService;
+import com.alisli.intelligenthistory.components.JiraIssuePanel;
+import com.alisli.intelligenthistory.services.JiraFetcherService;
+import com.alisli.intelligenthistory.model.JiraIssueMetadata;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;

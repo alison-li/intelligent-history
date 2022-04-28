@@ -1,4 +1,4 @@
-package com.github.alisonli.historyplugin.components;
+package com.alisli.intelligenthistory.components;
 
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;

@@ -1,6 +1,6 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.alisonli.historyplugin</id>
+    <id>com.alisli.intelligenthistory</id>
     <name>Intelligent History</name>
     <vendor email="alisli@cs.ubc.ca">Alison Li</vendor>
 
@@ -11,11 +11,11 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <projectConfigurable groupId="tools" displayName="Intelligent History"
-                             instance="com.github.alisonli.historyplugin.settings.JiraConfigurable"/>
-        <projectService serviceImplementation="com.github.alisonli.historyplugin.settings.JiraConfig"/>
+                             instance="com.alisli.intelligenthistory.settings.JiraConfigurable"/>
+        <projectService serviceImplementation="com.alisli.intelligenthistory.settings.JiraConfig"/>
         <toolWindow id="Jira" secondary="false" icon="MyIcons.Jira" anchor="left"
                     doNotActivateOnStart="true" canCloseContents="true"
-                    factoryClass="com.github.alisonli.historyplugin.components.JiraIssuePanelFactory"/>
+                    factoryClass="com.alisli.intelligenthistory.components.JiraIssuePanelFactory"/>
         <notificationGroup
                 displayType="BALLOON"
                 id="Intelligent History"
@@ -23,30 +23,30 @@
     </extensions>
 
     <actions>
-        <action id="com.github.alisonli.historyplugin.actions.HighlightImportantHistoryAction"
-                class="com.github.alisonli.historyplugin.actions.HighlightImportantHistoryAction"
+        <action id="com.alisli.intelligenthistory.actions.HighlightImportantHistoryAction"
+                class="com.alisli.intelligenthistory.actions.HighlightImportantHistoryAction"
                 text="Highlight Important Changes"
                 description="Emphasizes important commits in the file history based on diff analysis."
                 icon="AllIcons.Nodes.Jsf.Renderer">
             <add-to-group group-id="Vcs.FileHistory.Toolbar" anchor="after"
                           relative-to-action="Vcs.FileHistory.PresentationSettings"/>
         </action>
-        <action id="com.github.alisonli.historyplugin.actions.ShowDiffMetadataAction"
-                class="com.github.alisonli.historyplugin.actions.ShowDiffMetadataAction"
+        <action id="com.alisli.intelligenthistory.actions.ShowDiffMetadataAction"
+                class="com.alisli.intelligenthistory.actions.ShowDiffMetadataAction"
                 text="Show Revision Diff Metadata"
                 description="Displays a summary of changes made in this commit."
                 icon="AllIcons.Actions.ShowHiddens">
             <add-to-group group-id="Vcs.FileHistory.Toolbar" anchor="after"
-                          relative-to-action="com.github.alisonli.historyplugin.actions.HighlightImportantHistoryAction"/>
+                          relative-to-action="com.alisli.intelligenthistory.actions.HighlightImportantHistoryAction"/>
         </action>
-        <action id="com.github.alisonli.historyplugin.actions.JiraInHistoryAction"
-                class="com.github.alisonli.historyplugin.actions.ShowJiraMetadataAction"
+        <action id="com.alisli.intelligenthistory.actions.JiraInHistoryAction"
+                class="com.alisli.intelligenthistory.actions.ShowJiraMetadataAction"
                 text="Extract from Jira"
                 description="Extracts Jira issue keys from commit messages and interleaves the information from the
                                 matching Jira issue with the commits in file history."
                 icon="AllIcons.ToolbarDecorator.AddJira">
             <add-to-group group-id="Vcs.FileHistory.Toolbar" anchor="after"
-                          relative-to-action="com.github.alisonli.historyplugin.actions.ShowDiffMetadataAction"/>
+                          relative-to-action="com.alisli.intelligenthistory.actions.ShowDiffMetadataAction"/>
         </action>
     </actions>
 </idea-plugin>

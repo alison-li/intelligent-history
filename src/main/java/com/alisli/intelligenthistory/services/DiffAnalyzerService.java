@@ -1,6 +1,6 @@
-package com.github.alisonli.historyplugin.services;
+package com.alisli.intelligenthistory.services;
 
-import com.github.alisonli.historyplugin.model.RevisionDiffMetadata;
+import com.alisli.intelligenthistory.model.RevisionDiffMetadata;
 import com.github.difflib.DiffUtils;
 import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.DeltaType;
