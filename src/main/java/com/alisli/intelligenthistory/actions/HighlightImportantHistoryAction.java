@@ -1,6 +1,6 @@
-package com.github.alisonli.historyplugin.actions;
+package com.alisli.intelligenthistory.actions;
 
-import com.github.alisonli.historyplugin.highlighters.HighlighterFactory;
+import com.alisli.intelligenthistory.highlighters.HighlighterFactory;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.actionSystem.ToggleAction;

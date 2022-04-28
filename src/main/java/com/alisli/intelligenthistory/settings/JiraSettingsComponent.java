@@ -1,4 +1,4 @@
-package com.github.alisonli.historyplugin.settings;
+package com.alisli.intelligenthistory.settings;
 
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
@@ -42,8 +42,8 @@ public class JiraSettingsComponent {
             throw new ConfigurationException("Invalid URL");
         }
         config.setEndpointURL(endpointURLField.getText());
-        config.setUsername(usernameField.getText());
-        config.setPassword(String.valueOf(passwordField.getPassword()));
+        config.setUsername(usernameField.getText().trim());
+        config.setPassword(String.valueOf(passwordField.getPassword()).trim());
     }
 
     public JPanel getContent() {

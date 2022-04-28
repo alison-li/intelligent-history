@@ -1,4 +1,4 @@
-package com.github.alisonli.historyplugin.model;
+package com.alisli.intelligenthistory.model;
 
 public class RevisionDiffMetadata {
     private final String beforeContent;

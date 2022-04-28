@@ -1,6 +1,6 @@
-package com.github.alisonli.historyplugin.highlighters;
+package com.alisli.intelligenthistory.highlighters;
 
-import com.github.alisonli.historyplugin.services.DiffAnalyzerService;
+import com.alisli.intelligenthistory.services.DiffAnalyzerService;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.Gray;
 import com.intellij.ui.JBColor;

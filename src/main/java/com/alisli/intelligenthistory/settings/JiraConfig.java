@@ -1,4 +1,4 @@
-package com.github.alisonli.historyplugin.settings;
+package com.alisli.intelligenthistory.settings;
 
 import com.intellij.credentialStore.CredentialAttributes;
 import com.intellij.credentialStore.CredentialAttributesKt;

@@ -1,6 +1,6 @@
-package com.github.alisonli.historyplugin.services;
+package com.alisli.intelligenthistory.services;
 
-import com.github.alisonli.historyplugin.model.RevisionDiffMetadata;
+import com.alisli.intelligenthistory.model.RevisionDiffMetadata;
 import com.github.difflib.DiffUtils;
 import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.DeltaType;
@@ -30,6 +30,9 @@ import java.util.*;
  * Project service for analyzing diffs between revisions.
  */
 public final class DiffAnalyzerService {
+    private static final String DOCUMENTATION_PATTERN = "(.*)(\\*|/\\*|//)(.*)";
+    private static final String IMPORT_PATTERN = "(.*)import(.*)";
+    private static final String ANNOTATION_PATTERN = "(.*)@(Deprecated|Suppress[A-Za-z]*)(.*)";
     private static final Logger LOG = Logger.getInstance(DiffAnalyzerService.class);
 
     public static Set<Integer> getImportantCommits(Project project, VirtualFile root, FileHistoryUi logUi) {
@@ -80,15 +83,15 @@ public final class DiffAnalyzerService {
         Map<Integer, RevisionDiffMetadata> metadataMap = new HashMap<>();
         // Compare the first commit with an empty string.
         Hash firstHash = commitMetadataList.get(0).getId();
-        ContentRevision firstContentRevision = diffHandler.createContentRevision(logUi.getPathInCommit(firstHash), firstHash);
+        ContentRevision firstContentRevision = diffHandler.createContentRevision(Objects.requireNonNull(logUi.getPathInCommit(firstHash)), firstHash);
         String firstContent = firstContentRevision.getContent();
         metadataMap.put(logStorage.getCommitIndex(firstHash, root), getRevisionMetadata("", firstContent));
 
         for (int i = 0; i < commitMetadataList.size() - 1; i++) {
             Hash hash1 = commitMetadataList.get(i).getId();
             Hash hash2 = commitMetadataList.get(i + 1).getId();
-            ContentRevision contentRev1 = diffHandler.createContentRevision(logUi.getPathInCommit(hash1), hash1);
-            ContentRevision contentRev2 = diffHandler.createContentRevision(logUi.getPathInCommit(hash2), hash2);
+            ContentRevision contentRev1 = diffHandler.createContentRevision(Objects.requireNonNull(logUi.getPathInCommit(hash1)), hash1);
+            ContentRevision contentRev2 = diffHandler.createContentRevision(Objects.requireNonNull(logUi.getPathInCommit(hash2)), hash2);
             String beforeContent = contentRev1.getContent();
             String afterContent = contentRev2.getContent();
             RevisionDiffMetadata metadata = getRevisionMetadata(beforeContent, afterContent);
@@ -143,13 +146,11 @@ public final class DiffAnalyzerService {
     private static RevisionDiffMetadata evaluateDeltaByLine(List<String> lineList) {
         int numDocs = 0, numAnnotations = 0, numImports = 0, numNewLines = 0, numOther = 0;
         for (String line : lineList) {
-            if (line.matches("(.*)\\*(.*)")
-                    || line.matches("(.*)/\\*(.*)")
-                    || line.matches("(.*)//(.*)")) {
+            if (line.matches(DOCUMENTATION_PATTERN)) {
                 numDocs++;
-            } else if (line.matches("(.*)import(.*)")) {
+            } else if (line.matches(IMPORT_PATTERN)) {
                 numImports++;
-            } else if (line.matches("(.*)@[A-Za-z]+(.*)")) {
+            } else if (line.matches(ANNOTATION_PATTERN)) {
                 numAnnotations++;
             } else if (line.isEmpty()) {
                 numNewLines++;
