@@ -1,6 +1,7 @@
 package com.alisli.intelligenthistory.actions;
 
 import com.alisli.intelligenthistory.components.JiraIssuePanel;
+import com.alisli.intelligenthistory.components.JiraIssuePanelFactory;
 import com.alisli.intelligenthistory.services.JiraFetcherService;
 import com.alisli.intelligenthistory.model.JiraIssueMetadata;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -39,15 +40,7 @@ public class ShowJiraMetadataAction extends FileHistorySingleCommitAction<VcsFul
         JiraIssueMetadata issueMetadata = jiraService.getJiraIssueMetadata(detail);
         if (issueMetadata != null) {
             ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Jira Metadata");
-            JiraIssuePanel toolWindowBuilder = new JiraIssuePanel();
-            toolWindowBuilder.setTitle(issueMetadata.getTitle());
-            toolWindowBuilder.setBodyText(issueMetadata.getDescription());
-            JBScrollPane toolWindowContent = new JBScrollPane(toolWindowBuilder.getContent());
-            toolWindowContent.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-            ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
-            Content content = contentFactory.createContent(toolWindowContent, issueMetadata.getIssueKey(), false);
-            content.setPreferredFocusableComponent(toolWindowContent);
-            content.setDisposer(toolWindowBuilder);
+            Content content = JiraIssuePanelFactory.createJiraContent(issueMetadata.getIssueKey(), issueMetadata);
             Objects.requireNonNull(toolWindow).getContentManager().addContent(content);
             Objects.requireNonNull(toolWindow).show();
         }
