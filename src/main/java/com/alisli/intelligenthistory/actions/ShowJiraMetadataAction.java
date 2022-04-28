@@ -38,7 +38,7 @@ public class ShowJiraMetadataAction extends FileHistorySingleCommitAction<VcsFul
         JiraFetcherService jiraService = new JiraFetcherService(project);
         JiraIssueMetadata issueMetadata = jiraService.getJiraIssueMetadata(detail);
         if (issueMetadata != null) {
-            ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Jira");
+            ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Jira Metadata");
             JiraIssuePanel toolWindowBuilder = new JiraIssuePanel();
             toolWindowBuilder.setTitle(issueMetadata.getTitle());
             toolWindowBuilder.setBodyText(issueMetadata.getDescription());

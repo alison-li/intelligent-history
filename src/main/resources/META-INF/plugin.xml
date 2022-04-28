@@ -13,7 +13,7 @@
         <projectConfigurable groupId="tools" displayName="Intelligent History"
                              instance="com.alisli.intelligenthistory.settings.JiraConfigurable"/>
         <projectService serviceImplementation="com.alisli.intelligenthistory.settings.JiraConfig"/>
-        <toolWindow id="Jira" secondary="false" icon="MyIcons.Jira" anchor="left"
+        <toolWindow id="Jira Metadata" secondary="false" icon="MyIcons.Jira" anchor="left"
                     doNotActivateOnStart="true" canCloseContents="true"
                     factoryClass="com.alisli.intelligenthistory.components.JiraIssuePanelFactory"/>
         <notificationGroup
