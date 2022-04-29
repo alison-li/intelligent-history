@@ -1,1 +1,1 @@
-rootProject.name = "history-plugin"
+rootProject.name = "intelligent-history"
