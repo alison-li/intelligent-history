@@ -45,5 +45,6 @@ public class HighlightImportantHistoryAction extends ToggleAction {
         } else {
             logUi.getTable().addHighlighter(highlighter);
         }
+        logUi.getMainComponent().updateUI();
     }
 }
