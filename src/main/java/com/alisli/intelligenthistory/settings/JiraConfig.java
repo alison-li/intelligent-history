@@ -17,8 +17,7 @@ import org.jetbrains.annotations.Nullable;
         storages = {@Storage("jira-config.xml")}
 )
 public class JiraConfig implements PersistentStateComponent<JiraConfig> {
-    private static final String DEFAULT_ENDPOINT_URL = "https://issues.apache.org/jira/";
-    private String endpointURL = DEFAULT_ENDPOINT_URL;
+    private String endpointURL;
     private String username;
 
     @Nullable
@@ -54,12 +53,12 @@ public class JiraConfig implements PersistentStateComponent<JiraConfig> {
 
     @Transient
     public String getPassword() {
-        CredentialAttributes credentialAttributes = createCredentialAttributes(this.endpointURL);
+        CredentialAttributes credentialAttributes = createCredentialAttributes(username);
         return PasswordSafe.getInstance().getPassword(credentialAttributes);
     }
 
     public void setPassword(String password) {
-        CredentialAttributes credentialAttributes = createCredentialAttributes(this.endpointURL);
+        CredentialAttributes credentialAttributes = createCredentialAttributes(username);
         PasswordSafe.getInstance().setPassword(credentialAttributes, password);
     }
 
