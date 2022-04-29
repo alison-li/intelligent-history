@@ -2,6 +2,7 @@ package com.alisli.intelligenthistory.services;
 
 import com.alisli.intelligenthistory.model.RevisionDiffMetadata;
 import com.github.difflib.DiffUtils;
+import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.DeltaType;
 import com.github.difflib.patch.Patch;
@@ -170,7 +171,13 @@ public final class DiffAnalyzerService {
         if (afterContent != null) {
             right = LineTokenizer.tokenizeIntoList(afterContent, false);
         }
-        Patch<String> patch = DiffUtils.diff(left, right);
-        return patch.getDeltas();
+        Patch<String> patch;
+        try {
+            patch = DiffUtils.diff(left, right);
+        } catch (DiffException e) {
+            LOG.error(e);
+            return null;
+        }
+        return Objects.requireNonNull(patch).getDeltas();
     }
 }

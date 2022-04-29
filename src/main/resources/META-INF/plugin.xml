@@ -4,7 +4,7 @@
     <name>Intelligent History</name>
     <vendor email="alisli@cs.ubc.ca">Alison Li</vendor>
 
-    <idea-version since-build="212"/>
+    <idea-version since-build="213"/>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>Git4Idea</depends>
