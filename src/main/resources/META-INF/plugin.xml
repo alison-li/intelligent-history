@@ -4,8 +4,6 @@
     <name>Intelligent History</name>
     <vendor email="alisli@cs.ubc.ca">Alison Li</vendor>
 
-    <idea-version since-build="213"/>
-
     <depends>com.intellij.modules.platform</depends>
     <depends>Git4Idea</depends>
 
@@ -35,7 +33,7 @@
                 class="com.alisli.intelligenthistory.actions.ShowDiffMetadataAction"
                 text="Show Revision Diff Metadata"
                 description="Displays a summary of changes made in this commit."
-                icon="AllIcons.Actions.ShowHiddens">
+                icon="AllIcons.Actions.ShowCode">
             <add-to-group group-id="Vcs.FileHistory.Toolbar" anchor="after"
                           relative-to-action="com.alisli.intelligenthistory.actions.HighlightImportantHistoryAction"/>
         </action>
