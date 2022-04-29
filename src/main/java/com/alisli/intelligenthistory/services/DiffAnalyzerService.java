@@ -112,7 +112,7 @@ public final class DiffAnalyzerService {
             Hash commitHash = logUi.getLogData()
                     .getMiniDetailsGetter()
                     .getCommitData(commitId, Collections.singleton(commitId)).getId();
-            ContentRevision contentRevision = diffHandler.createContentRevision(filePath, commitHash);
+            ContentRevision contentRevision = diffHandler.createContentRevision(Objects.requireNonNull(filePath), commitHash);
             revisionList.add(contentRevision);
         }
         return revisionList;

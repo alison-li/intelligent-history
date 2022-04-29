@@ -10,6 +10,7 @@ import com.intellij.vcs.log.history.FileHistoryUi;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class ImportantCommitsHighlighter implements VcsLogHighlighter {
@@ -40,6 +41,6 @@ public class ImportantCommitsHighlighter implements VcsLogHighlighter {
 
     @Override
     public void update(@NotNull VcsLogDataPack dataPack, boolean refreshHappened) {
-        myImportantCommits = DiffAnalyzerService.getImportantCommits(myLogData.getProject(), myRoot, myUi);
+        myImportantCommits = DiffAnalyzerService.getImportantCommits(Objects.requireNonNull(myLogData).getProject(), myRoot, myUi);
     }
 }
