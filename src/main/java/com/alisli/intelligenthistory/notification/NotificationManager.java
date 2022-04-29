@@ -14,8 +14,7 @@ public class NotificationManager {
 
     public static void showIssueNotFound(Project project, String hash) {
         final Notification notification =
-                GROUP.createNotification(IntelligentHistoryBundle.message("ih.notification.issue.error.title"),
-                        IntelligentHistoryBundle.message("ih.notification.issue.error.content", hash),
+                GROUP.createNotification(IntelligentHistoryBundle.message("ih.notification.issue.error.content", hash),
                         NotificationType.INFORMATION)
                         .setIcon(MyIcons.Jira);
         notification.notify(project);
@@ -23,8 +22,7 @@ public class NotificationManager {
 
     public static void showJiraConfigNotFound(Project project) {
         final Notification notification =
-                GROUP.createNotification(IntelligentHistoryBundle.message("ih.notification.config.error.title"),
-                        IntelligentHistoryBundle.message("ih.notification.config.error.content"),
+                GROUP.createNotification(IntelligentHistoryBundle.message("ih.notification.config.error.content"),
                         NotificationType.WARNING)
                         .setIcon(MyIcons.Jira);
         notification.notify(project);

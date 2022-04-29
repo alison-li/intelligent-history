@@ -5,7 +5,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.actionSystem.Toggleable;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.actions.VcsContextUtil;
@@ -19,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public class HighlightImportantHistoryAction extends ToggleAction {
-    private static final Logger LOG = Logger.getInstance(HighlightImportantHistoryAction.class);
 
     @Override
     public void update(@NotNull AnActionEvent e) {

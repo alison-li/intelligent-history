@@ -9,7 +9,7 @@ plugins {
     // Kotlin support
     id("org.jetbrains.kotlin.jvm") version "1.6.10"
     // Gradle IntelliJ Plugin
-    id("org.jetbrains.intellij") version "1.4.0"
+    id("org.jetbrains.intellij") version "1.5.3"
     // Gradle Changelog Plugin
     id("org.jetbrains.changelog") version "1.3.1"
     // Gradle Qodana Plugin
@@ -25,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.java-diff-utils:java-diff-utils:4.5")
+    implementation("io.github.java-diff-utils:java-diff-utils:4.11")
     implementation("net.rcarz:jira-client:0.5")
 }
 
@@ -67,6 +67,10 @@ tasks {
 
     wrapper {
         gradleVersion = properties("gradleVersion")
+    }
+
+    buildSearchableOptions {
+        enabled = false
     }
 
     patchPluginXml {

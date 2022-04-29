@@ -18,7 +18,7 @@ public class JiraSettingsComponent {
 
     public void createUIComponents(Project project) {
         this.config = JiraConfig.getInstance(project);
-        endpointURLField.setText(config.getEndpointURL());
+        endpointURLField.setText(config != null ? config.getEndpointURL() : "");
         usernameField.setText(config.getUsername());
         passwordField.setText(config.getPassword());
     }
