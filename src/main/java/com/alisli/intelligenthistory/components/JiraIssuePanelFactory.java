@@ -25,8 +25,15 @@ public class JiraIssuePanelFactory implements ToolWindowFactory, DumbAware {
     public static Content createJiraContent(String displayName, JiraIssueMetadata issueMetadata) {
         JiraIssuePanel toolWindowBuilder = new JiraIssuePanel();
         if (issueMetadata != null) {
-            toolWindowBuilder.setTitle(issueMetadata.getTitle());
-            toolWindowBuilder.setBodyText(issueMetadata.getDescription());
+            toolWindowBuilder.setTitle(String.format("<html> " +
+                            "<b> %s </b> " +
+                            "<br>" +
+                            "%s",
+                    issueMetadata.getTitle(),
+                    issueMetadata.getHash())
+            );
+            toolWindowBuilder.setBodyText(String.format("Assignee: %s <br> Reporter: %s <br><br> %s ", issueMetadata.getAssignee(), issueMetadata.getReporter(),
+                    issueMetadata.getDescription()));
         }
         JBScrollPane toolWindowContent = new JBScrollPane(toolWindowBuilder.getContent());
         toolWindowContent.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);

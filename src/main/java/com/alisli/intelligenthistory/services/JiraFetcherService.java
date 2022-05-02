@@ -66,6 +66,8 @@ public final class JiraFetcherService {
                 issueMetadata.setPeopleInvolved(people.size());
                 issueMetadata.setTitle(issue.getSummary());
                 issueMetadata.setDescription(issue.getDescription());
+                issueMetadata.setReporter(issue.getReporter().getDisplayName());
+                issueMetadata.setAssignee(issue.getAssignee().getDisplayName());
                 issueMetadata.setPriority(issue.getPriority().toString());
                 issueMetadata.setUrl(issue.getUrl());
                 issueMetadata.setIssueLinks(issue.getIssueLinks().size());
