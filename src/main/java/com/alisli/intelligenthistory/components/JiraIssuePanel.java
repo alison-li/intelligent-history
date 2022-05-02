@@ -3,6 +3,7 @@ package com.alisli.intelligenthistory.components;
 import com.alisli.intelligenthistory.IntelligentHistoryBundle;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.Disposable;
+import com.intellij.util.ui.HTMLEditorKitBuilder;
 import com.intellij.util.ui.JBUI;
 import icons.MyIcons;
 
@@ -19,6 +20,7 @@ public class JiraIssuePanel implements Disposable {
         rootPanel.setFocusable(true);
         title.setText("");
         bodyText.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+        bodyText.setEditorKit(new HTMLEditorKitBuilder().withWordWrapViewFactory().build());
         bodyText.setText(IntelligentHistoryBundle.message("ih.panel.startup.text"));
     }
 
@@ -28,7 +30,6 @@ public class JiraIssuePanel implements Disposable {
     }
 
     public void setBodyText(String bodyText) {
-        this.bodyText.setContentType("text/html");
         this.bodyText.setText(bodyText);
         this.bodyText.addHyperlinkListener(e -> {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
