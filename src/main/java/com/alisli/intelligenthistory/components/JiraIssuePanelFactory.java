@@ -25,8 +25,7 @@ public class JiraIssuePanelFactory implements ToolWindowFactory, DumbAware {
     public static Content createJiraContent(String displayName, JiraIssueMetadata issueMetadata) {
         JiraIssuePanel toolWindowBuilder = new JiraIssuePanel();
         if (issueMetadata != null) {
-            toolWindowBuilder.setTitle(issueMetadata.getTitle());
-            toolWindowBuilder.setBodyText(issueMetadata.getDescription());
+            setJiraMetadataContent(toolWindowBuilder, issueMetadata);
         }
         JBScrollPane toolWindowContent = new JBScrollPane(toolWindowBuilder.getContent());
         toolWindowContent.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -35,5 +34,44 @@ public class JiraIssuePanelFactory implements ToolWindowFactory, DumbAware {
         content.setPreferredFocusableComponent(toolWindowContent);
         content.setDisposer(toolWindowBuilder);
         return content;
+    }
+
+    private static void setJiraMetadataContent(JiraIssuePanel panel, JiraIssueMetadata issueMetadata) {
+        panel.setTitle(String.format("<html> " +
+                        "<b>%s </b> " +
+                        "<br>" +
+                        "%s",
+                issueMetadata.getTitle(),
+                issueMetadata.getHash())
+        );
+        panel.setBodyText(String.format("<b>Assignee:</b> %s" +
+                        "<br>" +
+                        "<b>Reporter:</b> %s" +
+                        "<br><br>" +
+                        "<b>Description:</b> <br> %s" +
+                        "<br><br>" +
+                        "<b>Priority:</b> %s" +
+                        "<br><br>" +
+                        "<b>Issue Metadata:</b><br>" +
+                        "Commit Author Comments: %s <br>" +
+                        "Total Comments: %s <br>" +
+                        "People Involved: %s <br>" +
+                        "Watches: %s <br>" +
+                        "Votes: %s <br>" +
+                        "Issue Links: %s <br>" +
+                        "Sub Tasks: %s",
+                issueMetadata.getAssignee(),
+                issueMetadata.getReporter(),
+                issueMetadata.getDescription() == null ? "" : issueMetadata.getDescription(),
+                issueMetadata.getPriority(),
+                issueMetadata.getCommitAuthorComments(),
+                issueMetadata.getComments(),
+                issueMetadata.getPeopleInvolved(),
+                issueMetadata.getWatches(),
+                issueMetadata.getVotes(),
+                issueMetadata.getIssueLinks(),
+                issueMetadata.getSubTasks())
+        );
+        panel.createActionLink(issueMetadata.getUrl());
     }
 }

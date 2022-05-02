@@ -66,15 +66,20 @@ public final class JiraFetcherService {
                 issueMetadata.setPeopleInvolved(people.size());
                 issueMetadata.setTitle(issue.getSummary());
                 issueMetadata.setDescription(issue.getDescription());
+                issueMetadata.setReporter(issue.getReporter().getDisplayName());
+                issueMetadata.setAssignee(issue.getAssignee().getDisplayName());
                 issueMetadata.setPriority(issue.getPriority().toString());
-                issueMetadata.setUrl(issue.getUrl());
+                issueMetadata.setUrl(config.getEndpointURL() + "/browse/" + issueKey);
                 issueMetadata.setIssueLinks(issue.getIssueLinks().size());
                 issueMetadata.setSubTasks(issue.getSubtasks().size());
                 issueMetadata.setVotes(issue.getVotes().getVotes());
                 issueMetadata.setWatches(issue.getWatches().getWatchCount());
                 return issueMetadata;
             } catch (JiraException e) {
-                LOG.error(e);
+                LOG.error(e.getMessage());
+                if (e.getCause() != null) {
+                    LOG.error(e.getCause().getMessage());
+                }
             }
         }
         return null;

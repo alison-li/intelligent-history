@@ -3,11 +3,12 @@ package com.alisli.intelligenthistory.model;
 import com.intellij.vcs.log.VcsFullCommitDetails;
 
 public class JiraIssueMetadata {
-    @SuppressWarnings({"unused", "FieldCanBeLocal"})
     private final VcsFullCommitDetails detail;
     private String issueKey;
     private String title;
     private String description;
+    private String reporter;
+    private String assignee;
     private String priority;
     private String url;
     private int issueLinks;
@@ -20,6 +21,10 @@ public class JiraIssueMetadata {
 
     public JiraIssueMetadata(VcsFullCommitDetails detail) {
         this.detail = detail;
+    }
+
+    public String getHash() {
+        return detail.getId().toShortString();
     }
 
     public String getIssueKey() {
@@ -44,6 +49,22 @@ public class JiraIssueMetadata {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getReporter() {
+        return reporter;
+    }
+
+    public void setReporter(String reporter) {
+        this.reporter = reporter;
+    }
+
+    public String getAssignee() {
+        return assignee;
+    }
+
+    public void setAssignee(String assignee) {
+        this.assignee = assignee;
     }
 
     public String getPriority() {
@@ -116,22 +137,5 @@ public class JiraIssueMetadata {
 
     public void setPeopleInvolved(int peopleInvolved) {
         this.peopleInvolved = peopleInvolved;
-    }
-
-    @Override
-    public String toString() {
-        // TODO: Need better formatting
-        String issueLinksFormatted = String.format("Issue Links: %d", this.getIssueLinks());
-        String subTasksFormatted = String.format("Sub-tasks: %d", this.getSubTasks());
-        String votesFormatted = String.format("Votes: %d", this.getVotes());
-        String watchesFormatted = String.format("Watches: %d", this.getWatches());
-        String commentsFormatted = String.format("Comments: %d", this.getComments());
-        String commitAuthorCommentsFormatted = String.format("Commit Author Comments: %d", this.getCommitAuthorComments());
-        String peopleInvolvedFormatted = String.format("People Involved: %d", this.getPeopleInvolved());
-        return String.format("<b> %s </b> <br/> <b>Priority:<b> %s <br/> %s <br/> <br/> " +
-                        "%s <br/> %s <br/> %s <br/> %s <br/> %s <br/> %s <br/> %s <br/> <br/> %s",
-                this.getTitle(), this.getPriority(), this.getDescription(),
-                issueLinksFormatted, subTasksFormatted, votesFormatted, watchesFormatted, commentsFormatted,
-                commitAuthorCommentsFormatted, peopleInvolvedFormatted, this.getUrl());
     }
 }
