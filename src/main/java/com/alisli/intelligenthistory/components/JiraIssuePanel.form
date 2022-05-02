@@ -24,6 +24,7 @@
         </constraints>
         <properties>
           <editable value="false"/>
+          <font swing-font="TextPane.font"/>
         </properties>
       </component>
     </children>
