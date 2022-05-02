@@ -24,6 +24,7 @@
           </grid>
         </constraints>
         <properties>
+          <contentType value="text/html"/>
           <editable value="false"/>
           <font swing-font="TextPane.font"/>
         </properties>
