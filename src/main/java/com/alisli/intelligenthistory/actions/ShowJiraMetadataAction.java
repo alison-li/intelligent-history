@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
+import com.intellij.ui.content.ContentManager;
 import com.intellij.vcs.log.VcsFullCommitDetails;
 import com.intellij.vcs.log.data.DataGetter;
 import com.intellij.vcs.log.history.FileHistoryUi;
@@ -37,7 +38,19 @@ public class ShowJiraMetadataAction extends FileHistorySingleCommitAction<VcsFul
         if (issueMetadata != null) {
             ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Jira Metadata");
             Content content = JiraIssuePanelFactory.createJiraContent(issueMetadata.getIssueKey(), issueMetadata);
-            Objects.requireNonNull(toolWindow).getContentManager().addContent(content);
+            ContentManager contentManager = Objects.requireNonNull(toolWindow).getContentManager();
+            boolean contentAlreadyExists = false;
+            for (Content c : contentManager.getContents()) {
+                if (c.getDisplayName().equals(content.getDisplayName())) {
+                    contentAlreadyExists = true;
+                    contentManager.setSelectedContent(c);
+                    break;
+                }
+            }
+            if (!contentAlreadyExists) {
+                contentManager.addContent(content);
+                contentManager.setSelectedContent(content);
+            }
             Objects.requireNonNull(toolWindow).show();
         }
     }
