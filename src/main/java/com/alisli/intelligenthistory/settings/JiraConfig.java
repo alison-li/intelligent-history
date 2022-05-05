@@ -21,7 +21,7 @@ public class JiraConfig implements PersistentStateComponent<JiraConfig> {
     private String username;
 
     @Nullable
-    public static JiraConfig getInstance(Project project) {
+    public static JiraConfig getInstance(@NotNull Project project) {
         return project.getService(JiraConfig.class);
     }
 
