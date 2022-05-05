@@ -39,9 +39,8 @@
         </action>
         <action id="com.alisli.intelligenthistory.actions.JiraInHistoryAction"
                 class="com.alisli.intelligenthistory.actions.ShowJiraMetadataAction"
-                text="Extract from Jira"
-                description="Extracts Jira issue keys from commit messages and interleaves the information from the
-                                matching Jira issue with the commits in file history."
+                text="Show Jira Issue"
+                description="Finds the Jira issue key from a commit message and fetches information about the issue."
                 icon="AllIcons.ToolbarDecorator.AddJira">
             <add-to-group group-id="Vcs.FileHistory.Toolbar" anchor="after"
                           relative-to-action="com.alisli.intelligenthistory.actions.ShowDiffMetadataAction"/>
