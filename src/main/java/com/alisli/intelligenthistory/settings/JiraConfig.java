@@ -53,6 +53,9 @@ public class JiraConfig implements PersistentStateComponent<JiraConfig> {
 
     @Transient
     public String getPassword() {
+        if (username == null) {
+            return "";
+        }
         CredentialAttributes credentialAttributes = createCredentialAttributes(username);
         return PasswordSafe.getInstance().getPassword(credentialAttributes);
     }

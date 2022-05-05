@@ -8,7 +8,7 @@
     <depends>Git4Idea</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <projectConfigurable groupId="tools" displayName="Intelligent History"
+        <projectConfigurable parentId="tools" displayName="Intelligent History"
                              instance="com.alisli.intelligenthistory.settings.JiraConfigurable"/>
         <projectService serviceImplementation="com.alisli.intelligenthistory.settings.JiraConfig"/>
         <toolWindow id="Jira Metadata" secondary="false" icon="MyIcons.Jira" anchor="left"
