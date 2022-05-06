@@ -27,15 +27,20 @@ public final class JiraFetcherService {
     public JiraFetcherService(Project project) {
         this.project = project;
         this.config = JiraConfig.getInstance(project);
-        this.client = new JiraClient(Objects.requireNonNull(config).getEndpointURL(),
-                new BasicCredentials(config.getUsername(), config.getPassword()));
+        if (config == null
+                || isNullOrEmpty(config.getEndpointURL())
+                || isNullOrEmpty(config.getUsername())
+                || isNullOrEmpty(config.getPassword())) {
+            this.client = null;
+        } else {
+            this.client = new JiraClient(Objects.requireNonNull(config).getEndpointURL(),
+                    new BasicCredentials(config.getUsername(), config.getPassword()));
+        }
     }
 
     public JiraIssueMetadata getJiraIssueMetadata(VcsFullCommitDetails detail) {
         String issueKey = extractJiraIssueKey(detail.getSubject());
-        if (isNullOrEmpty(config.getEndpointURL())
-                || isNullOrEmpty(config.getUsername())
-                || isNullOrEmpty(config.getPassword())) {
+        if (client == null) {
             NotificationManager.showJiraConfigNotFound(project);
         } else if (issueKey == null) {
             NotificationManager.showIssueNotFound(project, detail.getId().toShortString());
