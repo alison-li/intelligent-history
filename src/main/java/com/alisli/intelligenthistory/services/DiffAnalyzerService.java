@@ -30,7 +30,7 @@ import java.util.*;
  * Project service for analyzing diffs between revisions.
  */
 public final class DiffAnalyzerService {
-    private static final String DOCUMENTATION_PATTERN = "(.*)(\\*|/\\*|//)(.*)";
+    private static final String DOCUMENTATION_PATTERN = "(.*)^(\\*|/\\*|//)(.*)";
     private static final String IMPORT_PATTERN = "(.*)import(.*)";
     private static final String ANNOTATION_PATTERN = "(.*)@(Deprecated|Suppress[A-Za-z]*)(.*)";
     private static final Logger LOG = Logger.getInstance(DiffAnalyzerService.class);
