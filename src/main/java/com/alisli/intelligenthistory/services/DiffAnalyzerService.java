@@ -30,9 +30,9 @@ import java.util.*;
  * Project service for analyzing diffs between revisions.
  */
 public final class DiffAnalyzerService {
-    private static final String DOCUMENTATION_PATTERN = "(.*)^(\\*|/\\*|//)(.*)";
-    private static final String IMPORT_PATTERN = "(.*)import(.*)";
-    private static final String ANNOTATION_PATTERN = "(.*)@(Deprecated|Suppress[A-Za-z]*)(.*)";
+    private static final String DOCUMENTATION_PATTERN = "\\s*\\W(\\*|/\\*|//)(.*)";
+    private static final String IMPORT_PATTERN = "import(.*)";
+    private static final String ANNOTATION_PATTERN = "\\s*@(Deprecated|Suppress[A-Za-z]*)(.*)";
     private static final Logger LOG = Logger.getInstance(DiffAnalyzerService.class);
 
     public static Set<Integer> getImportantCommits(Project project, VirtualFile root, FileHistoryUi logUi) {
@@ -42,6 +42,21 @@ public final class DiffAnalyzerService {
         // The revisions are ordered from most recent to the oldest commit.
         // Need to reverse the order when considering `before` and `after` versions of a file.
         Collections.reverse(contentRevisions);
+
+        // The first commit is compared against an empty string.
+        try {
+            ContentRevision firstContentRev = contentRevisions.get(0);
+            String firstContent = firstContentRev.getContent();
+            RevisionDiffMetadata firstMetadata = getRevisionMetadata("", firstContent);
+            Hash firstHash = HashImpl.build(((GitRevisionNumber) firstContentRev.getRevisionNumber()).getRev());
+            int firstCommitIndex = logStorage.getCommitIndex(firstHash, root);
+            if (firstMetadata.getOther() >= 1) {
+                importantCommits.add(firstCommitIndex);
+            }
+        } catch (VcsException e) {
+            LOG.error(e);
+        }
+
         for (int i = 0; i < contentRevisions.size() - 1; i++) {
             ContentRevision contentRev1 = contentRevisions.get(i);
             ContentRevision contentRev2 = contentRevisions.get(i + 1);
@@ -50,14 +65,12 @@ public final class DiffAnalyzerService {
                 String afterContent = contentRev2.getContent();
                 RevisionDiffMetadata metadata = getRevisionMetadata(beforeContent, afterContent);
                 if (metadata.getOther() >= 1) {
-                    Hash hash = HashImpl.build(
-                            ((GitRevisionNumber) contentRev2.getRevisionNumber()).getRev()
-                    );
+                    Hash hash = HashImpl.build(((GitRevisionNumber) contentRev2.getRevisionNumber()).getRev());
                     int commitIndex = logStorage.getCommitIndex(hash, root);
                     importantCommits.add(commitIndex);
                 }
-            } catch (VcsException ex) {
-                LOG.error(ex);
+            } catch (VcsException e) {
+                LOG.error(e);
             }
         }
         return importantCommits;
