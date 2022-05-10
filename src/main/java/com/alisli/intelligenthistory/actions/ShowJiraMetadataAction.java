@@ -3,7 +3,9 @@ package com.alisli.intelligenthistory.actions;
 import com.alisli.intelligenthistory.components.JiraIssuePanelFactory;
 import com.alisli.intelligenthistory.services.JiraFetcherService;
 import com.alisli.intelligenthistory.model.JiraIssueMetadata;
+import com.alisli.intelligenthistory.services.UsageLoggingService;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
@@ -36,6 +38,14 @@ public class ShowJiraMetadataAction extends FileHistorySingleCommitAction<VcsFul
         JiraFetcherService jiraService = new JiraFetcherService(project);
         JiraIssueMetadata issueMetadata = jiraService.getJiraIssueMetadata(detail);
         if (issueMetadata != null) {
+            UsageLoggingService loggingService = UsageLoggingService.getInstance();
+            loggingService.writeEventToLog(e.getRequiredData(CommonDataKeys.VIRTUAL_FILE).getPresentableName(),
+                    UsageLoggingService.LogEventType.JIRA_METADATA_INVOKE
+                            + ": "
+                            + issueMetadata.getIssueKey()
+                            + " for commit "
+                            + issueMetadata.getHash());
+
             ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Jira Metadata");
             Content content = JiraIssuePanelFactory.createJiraContent(issueMetadata.getIssueKey(), issueMetadata);
             ContentManager contentManager = Objects.requireNonNull(toolWindow).getContentManager();

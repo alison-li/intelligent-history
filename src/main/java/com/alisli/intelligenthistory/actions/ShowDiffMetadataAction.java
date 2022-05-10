@@ -3,7 +3,9 @@ package com.alisli.intelligenthistory.actions;
 import com.alisli.intelligenthistory.IntelligentHistoryBundle;
 import com.alisli.intelligenthistory.model.RevisionDiffMetadata;
 import com.alisli.intelligenthistory.services.DiffAnalyzerService;
+import com.alisli.intelligenthistory.services.UsageLoggingService;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.Balloon;
@@ -44,6 +46,12 @@ public class ShowDiffMetadataAction extends FileHistorySingleCommitAction<VcsFul
     protected void performAction(@NotNull Project project, @NotNull FileHistoryUi ui,
                                  @NotNull VcsFullCommitDetails detail, @NotNull AnActionEvent e) {
         try {
+            UsageLoggingService loggingService = UsageLoggingService.getInstance();
+            loggingService.writeEventToLog(e.getRequiredData(CommonDataKeys.VIRTUAL_FILE).getPresentableName(),
+                    UsageLoggingService.LogEventType.DIFF_METADATA_INVOKE
+                            + ": "
+                            + detail.getId().toShortString());
+
             int id = ui.getLogData().getStorage().getCommitIndex(detail.getId(), detail.getRoot());
             RevisionDiffMetadata diffMetadata = DiffAnalyzerService.getRevisionMetadataForId(project, detail.getRoot(), ui, id);
             JBLabel popupContent = new JBLabel("<html>" + diffMetadata + "</html>");
