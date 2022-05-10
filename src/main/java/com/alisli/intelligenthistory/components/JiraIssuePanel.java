@@ -1,6 +1,8 @@
 package com.alisli.intelligenthistory.components;
 
 import com.alisli.intelligenthistory.IntelligentHistoryBundle;
+import com.alisli.intelligenthistory.model.JiraIssueMetadata;
+import com.alisli.intelligenthistory.services.UsageLoggingService;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.Disposable;
 import com.intellij.ui.components.ActionLink;
@@ -10,6 +12,8 @@ import com.intellij.util.ui.JBUI;
 import icons.MyIcons;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
 public class JiraIssuePanel implements Disposable {
@@ -37,11 +41,17 @@ public class JiraIssuePanel implements Disposable {
         this.bodyText.setText(bodyText);
     }
 
-    public void createActionLink(String url) {
+    public void createActionLink(JiraIssueMetadata metadata) {
         ActionLink externalLink = new ActionLink(IntelligentHistoryBundle.message("ih.panel.external.jira.button.title"), e -> {
-            BrowserUtil.browse(url);
+            BrowserUtil.browse(metadata.getUrl());
         });
         externalLink.setExternalLinkIcon();
+        externalLink.addActionListener(e -> {
+            UsageLoggingService loggingService = UsageLoggingService.getInstance();
+            loggingService.writeEventToLog("^", UsageLoggingService.LogEventType.JIRA_EXTERNAL_LINK
+                    + ": Visited "
+                    + "'" + metadata.getIssueKey() + "'");
+        });
         GridConstraints constraints = new GridConstraints();
         constraints.setAnchor(GridConstraints.ANCHOR_SOUTHEAST);
         constraints.setUseParentLayout(true);

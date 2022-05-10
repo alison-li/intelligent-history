@@ -72,6 +72,6 @@ public class JiraIssuePanelFactory implements ToolWindowFactory, DumbAware {
                 issueMetadata.getIssueLinks(),
                 issueMetadata.getSubTasks())
         );
-        panel.createActionLink(issueMetadata.getUrl());
+        panel.createActionLink(issueMetadata);
     }
 }
