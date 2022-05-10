@@ -42,8 +42,8 @@ public class UsageLoggingService implements AWTEventListener {
     public void writeEventToLog(String fileName, String message) {
         BufferedWriter writer;
         try {
-            writer = new BufferedWriter(new FileWriter(pluginLogPath));
-            String formattedMessage = String.format("[%s][%s] %s",
+            writer = new BufferedWriter(new FileWriter(pluginLogPath, true));
+            String formattedMessage = String.format("[%s][%s] %s\n",
                     fileName, new Timestamp(System.currentTimeMillis()), message);
             writer.write(formattedMessage);
             writer.close();
