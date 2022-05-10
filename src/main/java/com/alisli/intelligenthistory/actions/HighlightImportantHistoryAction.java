@@ -1,10 +1,8 @@
 package com.alisli.intelligenthistory.actions;
 
 import com.alisli.intelligenthistory.highlighters.HighlighterFactory;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.actionSystem.ToggleAction;
-import com.intellij.openapi.actionSystem.Toggleable;
+import com.alisli.intelligenthistory.services.UsageLoggingService;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.actions.VcsContextUtil;
@@ -39,11 +37,17 @@ public class HighlightImportantHistoryAction extends ToggleAction {
         VirtualFile root = VcsLogUtil.getActualRoot(project, path);
         FileHistoryUi logUi = e.getRequiredData(VcsLogInternalDataKeys.FILE_HISTORY_UI);
         VcsLogHighlighter highlighter = HighlighterFactory.getHighlighter(project, root, path, logUi);
+
+        UsageLoggingService loggingService = UsageLoggingService.getInstance();
+        String fileName = e.getRequiredData(CommonDataKeys.VIRTUAL_FILE).getPresentableName();
+
         if (!state) {
             logUi.getTable().removeHighlighter(highlighter);
             HighlighterFactory.disposeHighlighter(path);
+            loggingService.writeEventToLog(fileName, UsageLoggingService.LogEventType.HIGHLIGHT_TOGGLE + ": Toggle OFF");
         } else {
             logUi.getTable().addHighlighter(highlighter);
+            loggingService.writeEventToLog(fileName, UsageLoggingService.LogEventType.HIGHLIGHT_TOGGLE + ": Toggle ON");
         }
         logUi.getMainComponent().updateUI();
     }
