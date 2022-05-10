@@ -20,6 +20,12 @@
         />
     </extensions>
 
+    <application-components>
+        <component>
+            <implementation-class>com.alisli.intelligenthistory.listeners.MyCommitSelectionListener</implementation-class>
+        </component>
+    </application-components>
+
     <actions>
         <action id="com.alisli.intelligenthistory.actions.HighlightImportantHistoryAction"
                 class="com.alisli.intelligenthistory.actions.HighlightImportantHistoryAction"

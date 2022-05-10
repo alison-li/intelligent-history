@@ -3,20 +3,16 @@ package com.alisli.intelligenthistory.services;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.diagnostic.Logger;
 
-import java.awt.*;
-import java.awt.event.AWTEventListener;
-import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
 
-public class UsageLoggingService implements AWTEventListener {
+public class UsageLoggingService {
     private static final Logger LOG = Logger.getInstance(UsageLoggingService.class);
     private static UsageLoggingService instance;
     String pluginLogPath = PathManager.getLogPath() + "/intelligent-history/intelligent-history-log.txt";
-    private boolean mouseDrag = false;
 
     private UsageLoggingService() {
         File file = new File(pluginLogPath);
@@ -50,26 +46,6 @@ public class UsageLoggingService implements AWTEventListener {
         } catch (IOException e) {
             LOG.error(e);
         }
-    }
-
-    @Override
-    public void eventDispatched(AWTEvent e) {
-        int id = e.getID();
-        if (id == MouseEvent.MOUSE_DRAGGED) {
-            mouseDrag = true;
-            return;
-        }
-        if (id == MouseEvent.MOUSE_RELEASED && ((MouseEvent) e).getButton() == MouseEvent.BUTTON1) {
-            if (!mouseDrag) {
-                handleMouseEvent(e);
-            }
-            mouseDrag = false;
-        }
-    }
-
-    // TODO: Listen to selected commits when in file history UI
-    private void handleMouseEvent(AWTEvent e) {
-        System.out.println(e.getSource());
     }
 
     public enum LogEventType {
