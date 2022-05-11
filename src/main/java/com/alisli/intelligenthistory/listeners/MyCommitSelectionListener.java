@@ -19,7 +19,10 @@ public class MyCommitSelectionListener implements AWTEventListener, AnActionList
 
     public MyCommitSelectionListener() {
         Topics.subscribe(AnActionListener.TOPIC, this, this);
-        long eventMask = AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK | AWTEvent.WINDOW_EVENT_MASK | AWTEvent.WINDOW_STATE_EVENT_MASK;
+        long eventMask = AWTEvent.MOUSE_EVENT_MASK
+                | AWTEvent.MOUSE_MOTION_EVENT_MASK
+                | AWTEvent.WINDOW_EVENT_MASK
+                | AWTEvent.WINDOW_STATE_EVENT_MASK;
         Toolkit.getDefaultToolkit().addAWTEventListener(this, eventMask);
     }
 
@@ -40,7 +43,6 @@ public class MyCommitSelectionListener implements AWTEventListener, AnActionList
 
     private void handleMouseEvent(AWTEvent e) {
         final Object source = e.getSource();
-        System.out.println(source);
         if (source instanceof VcsLogGraphTable) {
             VcsLogGraphTable table = (VcsLogGraphTable) source;
             VisibleGraph<Integer> visibleGraph = table.getVisibleGraph();
