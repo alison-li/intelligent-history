@@ -47,7 +47,8 @@ public class ShowJiraMetadataAction extends FileHistorySingleCommitAction<VcsFul
                             + issueMetadata.getHash());
 
             ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Jira Metadata");
-            Content content = JiraIssuePanelFactory.createJiraContent(issueMetadata.getIssueKey(), issueMetadata);
+            String fileName = e.getRequiredData(CommonDataKeys.VIRTUAL_FILE).getPresentableName();
+            Content content = JiraIssuePanelFactory.createJiraContent(issueMetadata.getIssueKey(), issueMetadata, fileName);
             ContentManager contentManager = Objects.requireNonNull(toolWindow).getContentManager();
             boolean contentAlreadyExists = false;
             for (Content c : contentManager.getContents()) {

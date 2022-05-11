@@ -17,15 +17,15 @@ public class JiraIssuePanelFactory implements ToolWindowFactory, DumbAware {
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         RunOnceUtil.runOnceForProject(project, "Jira Metadata Description", () -> {
-            Content content = createJiraContent("Description", null);
+            Content content = createJiraContent("Description", null, null);
             toolWindow.getContentManager().addContent(content);
         });
     }
 
-    public static Content createJiraContent(String displayName, JiraIssueMetadata issueMetadata) {
+    public static Content createJiraContent(String displayName, JiraIssueMetadata issueMetadata, String fileName) {
         JiraIssuePanel toolWindowBuilder = new JiraIssuePanel();
         if (issueMetadata != null) {
-            setJiraMetadataContent(toolWindowBuilder, issueMetadata);
+            setJiraMetadataContent(toolWindowBuilder, issueMetadata, fileName);
         }
         JBScrollPane toolWindowContent = new JBScrollPane(toolWindowBuilder.getContent());
         toolWindowContent.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -36,7 +36,7 @@ public class JiraIssuePanelFactory implements ToolWindowFactory, DumbAware {
         return content;
     }
 
-    private static void setJiraMetadataContent(JiraIssuePanel panel, JiraIssueMetadata issueMetadata) {
+    private static void setJiraMetadataContent(JiraIssuePanel panel, JiraIssueMetadata issueMetadata, String fileName) {
         panel.setTitle(String.format("<html> " +
                         "<b>%s </b> " +
                         "<br>" +
@@ -72,6 +72,6 @@ public class JiraIssuePanelFactory implements ToolWindowFactory, DumbAware {
                 issueMetadata.getIssueLinks(),
                 issueMetadata.getSubTasks())
         );
-        panel.createActionLink(issueMetadata);
+        panel.createActionLink(issueMetadata, fileName);
     }
 }

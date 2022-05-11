@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 public class UsageLoggingService {
     private static final Logger LOG = Logger.getInstance(UsageLoggingService.class);
     private static UsageLoggingService instance;
-    String pluginLogPath = PathManager.getLogPath() + "/intelligent-history/intelligent-history-log.txt";
+    String pluginLogPath = PathManager.getLogPath() + "/intelligent-history/intelligent-history.log";
 
     private UsageLoggingService() {
         File file = new File(pluginLogPath);

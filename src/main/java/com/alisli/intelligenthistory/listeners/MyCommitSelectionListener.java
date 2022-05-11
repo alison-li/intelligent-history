@@ -4,7 +4,7 @@ import com.alisli.intelligenthistory.services.UsageLoggingService;
 import com.intellij.application.Topics;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.ex.AnActionListener;
-import com.intellij.vcs.log.Hash;
+import com.intellij.vcs.log.VcsCommitMetadata;
 import com.intellij.vcs.log.graph.VisibleGraph;
 import com.intellij.vcs.log.ui.table.VcsLogGraphTable;
 
@@ -47,15 +47,15 @@ public class MyCommitSelectionListener implements AWTEventListener, AnActionList
             VcsLogGraphTable table = (VcsLogGraphTable) source;
             VisibleGraph<Integer> visibleGraph = table.getVisibleGraph();
             Integer commitId = visibleGraph.getRowInfo(table.getSelectedRow()).getCommit();
-            Hash commitHash = table.getLogData()
+            VcsCommitMetadata commitMetadata = table.getLogData()
                     .getMiniDetailsGetter()
-                    .getCommitData(commitId, Collections.singleton(commitId)).getId();
-
+                    .getCommitData(commitId, Collections.singleton(commitId));
             UsageLoggingService loggingService = UsageLoggingService.getInstance();
             String fileName = new File(table.getId()).getName();
-            loggingService.writeEventToLog(fileName, UsageLoggingService.LogEventType.COMMIT_SELECTION
-                    + ": "
-                    + commitHash.toShortString());
+            String formattedMessage = String.format("%s: [%s] [%s] [%s]",
+                    UsageLoggingService.LogEventType.COMMIT_SELECTION,
+                    commitMetadata.getAuthor(), commitMetadata.getSubject(), commitMetadata.getId().toShortString());
+            loggingService.writeEventToLog(fileName, formattedMessage);
         }
     }
 

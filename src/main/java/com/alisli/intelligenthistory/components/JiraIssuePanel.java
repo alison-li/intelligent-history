@@ -41,14 +41,14 @@ public class JiraIssuePanel implements Disposable {
         this.bodyText.setText(bodyText);
     }
 
-    public void createActionLink(JiraIssueMetadata metadata) {
+    public void createActionLink(JiraIssueMetadata metadata, String fileName) {
         ActionLink externalLink = new ActionLink(IntelligentHistoryBundle.message("ih.panel.external.jira.button.title"), e -> {
             BrowserUtil.browse(metadata.getUrl());
         });
         externalLink.setExternalLinkIcon();
         externalLink.addActionListener(e -> {
             UsageLoggingService loggingService = UsageLoggingService.getInstance();
-            loggingService.writeEventToLog("^", UsageLoggingService.LogEventType.JIRA_EXTERNAL_LINK
+            loggingService.writeEventToLog(fileName, UsageLoggingService.LogEventType.JIRA_EXTERNAL_LINK
                     + ": Visited "
                     + "'" + metadata.getIssueKey() + "'");
         });
