@@ -52,9 +52,9 @@ public class MyCommitSelectionListener implements AWTEventListener, AnActionList
                     .getCommitData(commitId, Collections.singleton(commitId));
             UsageLoggingService loggingService = UsageLoggingService.getInstance();
             String fileName = new File(table.getId()).getName();
-            String formattedMessage = String.format("%s: [%s] [%s] [%s]",
+            String formattedMessage = String.format("%s: [%s] [%s]",
                     UsageLoggingService.LogEventType.COMMIT_SELECTION,
-                    commitMetadata.getAuthor(), commitMetadata.getSubject(), commitMetadata.getId().toShortString());
+                    commitMetadata.getSubject(), commitMetadata.getId().toShortString());
             loggingService.writeEventToLog(fileName, formattedMessage);
         }
     }
