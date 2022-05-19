@@ -74,7 +74,7 @@ public final class JiraFetcherService {
                 issueMetadata.setReporter(issue.getReporter().getDisplayName());
                 issueMetadata.setAssignee(issue.getAssignee().getDisplayName());
                 issueMetadata.setPriority(issue.getPriority().toString());
-                issueMetadata.setUrl(config.getEndpointURL() + "/browse/" + issueKey);
+                issueMetadata.setUrl(config.getEndpointURL().replaceAll("/$", "") + "/browse/" + issueKey);
                 issueMetadata.setIssueLinks(issue.getIssueLinks().size());
                 issueMetadata.setSubTasks(issue.getSubtasks().size());
                 issueMetadata.setVotes(issue.getVotes().getVotes());
