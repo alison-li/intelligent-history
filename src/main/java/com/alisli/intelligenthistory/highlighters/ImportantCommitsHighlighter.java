@@ -31,8 +31,9 @@ public class ImportantCommitsHighlighter implements VcsLogHighlighter {
     }
 
     @Override
-    public @NotNull VcsCommitStyle getStyle(int commitId, @NotNull VcsShortCommitDetails commitDetails,
-                                            boolean isSelected) {
+    @NotNull
+    public VcsCommitStyle getStyle(int commitId, @NotNull VcsShortCommitDetails commitDetails,
+                                   int column, boolean isSelected) {
         if (!myImportantCommits.contains(commitId)) {
             return VcsCommitStyleFactory.foreground(TRIVIAL_COMMIT_FOREGROUND);
         }
