@@ -21,6 +21,7 @@ specific to Java.
 
 The Diff Metadata information for a commit is described using the following categories for changes:
 * **Documentation:** The number of affected lines involving documentation and comments.
+* **Annotation:** The number of affected lines involving `@Deprecated` and `@Suppress` annotations.
 * **Import:** The number of affected lines involving `import`.
 * **Newline:** The number of affected lines involving newlines.
 * **Other:** All other changes that do not fall into the above categories.
