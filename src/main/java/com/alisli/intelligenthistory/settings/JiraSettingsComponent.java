@@ -41,7 +41,7 @@ public class JiraSettingsComponent {
         } catch (MalformedURLException | URISyntaxException e) {
             throw new ConfigurationException("Invalid URL");
         }
-        config.setEndpointURL(endpointURLField.getText());
+        config.setEndpointURL(endpointURLField.getText().trim());
         config.setUsername(usernameField.getText().trim());
         config.setPassword(String.valueOf(passwordField.getPassword()).trim());
     }
