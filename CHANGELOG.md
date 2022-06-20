@@ -4,4 +4,4 @@
 
 ## [Unreleased]
 ### Added
-First release!
+* First release!
