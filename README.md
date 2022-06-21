@@ -1,8 +1,8 @@
 # Intelligent History
 
 ![Build](https://github.com/Alison-Li/history-plugin/workflows/Build/badge.svg)
-[![Version](https://img.shields.io/jetbrains/plugin/v/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/PLUGIN_ID)
-[![Downloads](https://img.shields.io/jetbrains/plugin/d/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/PLUGIN_ID)
+[![Version](https://img.shields.io/jetbrains/plugin/v/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/19393-intelligent-history)
+[![Downloads](https://img.shields.io/jetbrains/plugin/d/PLUGIN_ID.svg)](https://plugins.jetbrains.com/plugin/19393-intelligent-history)
 
 <!-- Plugin description -->
 Intelligent History is a research prototype plugin for [IntelliJ IDEA](https://www.jetbrains.com/idea/) that aims to support more efficient exploration of a Java class' commit history by:
@@ -47,9 +47,9 @@ The Jira Metadata information for a commit and its referenced Jira issue is desc
 
 ## Installation
 
-Intelligent History is currently supported for IntelliJ 2022.1.
+- Intelligent History on the [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/19393-intelligent-history).
 
-- Using IDE built-in plugin system (currently not available):
+- Using IDE built-in plugin system:
   
   <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "Intelligent History"</kbd> >
   <kbd>Install Plugin</kbd>
