@@ -3,9 +3,9 @@
 # Intelligent History Changelog
 
 ## [Unreleased]
-### Added
-* Plugin icon
+### Changed
+* Replace default plugin icon
 
-## [1.0.0]
+## [1.0.0] - 2022-6-20
 ### Added
 * First release!
