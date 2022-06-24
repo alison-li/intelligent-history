@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>com.alisli.intelligenthistory</id>
     <name>Intelligent History</name>
-    <vendor email="alisli@cs.ubc.ca">Alison Li</vendor>
+    <vendor email="me@alisli.com">Alison Li</vendor>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>Git4Idea</depends>
