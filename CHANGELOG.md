@@ -3,9 +3,6 @@
 # Intelligent History Changelog
 
 ## [Unreleased]
-### Changed
-* Update JetBrains Marketplace availability in README
-* Update vendor email in plugin configuration file
 
 ## [1.0.1] - 2022-6-21
 ### Changed
