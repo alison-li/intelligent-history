@@ -1,6 +1,7 @@
 package com.alisli.intelligenthistory.components;
 
 import com.alisli.intelligenthistory.model.JiraIssueMetadata;
+import com.github.rjeschke.txtmark.Processor;
 import com.intellij.ide.util.RunOnceUtil;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
@@ -62,7 +63,7 @@ public class JiraIssuePanelFactory implements ToolWindowFactory, DumbAware {
                         "Sub Tasks: %s",
                 issueMetadata.getAssignee(),
                 issueMetadata.getReporter(),
-                issueMetadata.getDescription() == null ? "" : issueMetadata.getDescription(),
+                issueMetadata.getDescription() == null ? "" : Processor.process(issueMetadata.getDescription()),
                 issueMetadata.getPriority(),
                 issueMetadata.getCommitAuthorComments(),
                 issueMetadata.getComments(),

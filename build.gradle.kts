@@ -27,6 +27,7 @@ repositories {
 dependencies {
     implementation("io.github.java-diff-utils:java-diff-utils:4.11")
     implementation("net.rcarz:jira-client:0.5")
+    implementation("com.github.rjeschke:txtmark:0.13")
 }
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
