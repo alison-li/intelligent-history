@@ -30,7 +30,7 @@ public class JiraIssuePanelFactory implements ToolWindowFactory, DumbAware {
         }
         JBScrollPane toolWindowContent = new JBScrollPane(toolWindowBuilder.getContent());
         toolWindowContent.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
+        ContentFactory contentFactory = ContentFactory.getInstance();
         Content content = contentFactory.createContent(toolWindowContent, displayName, false);
         content.setPreferredFocusableComponent(toolWindowContent);
         content.setDisposer(toolWindowBuilder);
