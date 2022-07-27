@@ -2,7 +2,13 @@
 
 # Intelligent History Changelog
 
-## [Unreleased]
+## [1.0.2] - 2022-6-27
+### Added
+* Markdown rendering for Jira issue description
+
+### Changed
+* JetBrains Marketplace availability in README
+* Vendor email in plugin configuration file
 
 ## [1.0.1] - 2022-6-21
 ### Changed
