@@ -2,6 +2,8 @@
 
 # Intelligent History Changelog
 
+## [Unreleased]
+
 ## [1.0.2] - 2022-6-27
 ### Added
 * Markdown rendering for Jira issue description
