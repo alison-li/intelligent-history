@@ -21,8 +21,10 @@ import com.intellij.vcs.log.graph.VisibleGraph;
 import com.intellij.vcs.log.history.FileHistoryPaths;
 import com.intellij.vcs.log.history.FileHistoryUi;
 import com.intellij.vcs.log.impl.HashImpl;
+import com.intellij.vcs.log.visible.VisiblePack;
 import git4idea.GitRevisionNumber;
 import git4idea.log.GitLogDiffHandler;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -87,8 +89,7 @@ public final class DiffAnalyzerService {
             throws VcsException {
         VcsLogStorage logStorage = logUi.getLogData().getStorage();
         GitLogDiffHandler diffHandler = new GitLogDiffHandler(project);
-        Set<Integer> commits =
-                FileHistoryPaths.INSTANCE.getFileHistory(logUi.getDataPack()).getCommitsToPathsMap().keySet();
+        List<Integer> commits = getCommitList(logUi.getDataPack());
         List<VcsCommitMetadata> commitMetadataList = ContainerUtil.map(commits,
                 id -> logUi.getLogData().getMiniDetailsGetter().getCommitData(id, Collections.singleton(id)));
         commitMetadataList.sort(Comparator.comparing(VcsShortCommitDetails::getCommitTime));
@@ -112,6 +113,15 @@ public final class DiffAnalyzerService {
         }
 
         return metadataMap;
+    }
+
+    private static @NotNull List<Integer> getCommitList(@NotNull VisiblePack visiblePack) {
+        VisibleGraph<Integer> graph = visiblePack.getVisibleGraph();
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < graph.getVisibleCommitCount(); i++) {
+            result.add(graph.getRowInfo(i).getCommit());
+        }
+        return result;
     }
 
     private static List<ContentRevision> getFileHistoryRevisionList(Project project, FileHistoryUi logUi) {
