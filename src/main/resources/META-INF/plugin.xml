@@ -8,9 +8,12 @@
     <depends>Git4Idea</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <projectConfigurable parentId="tools" displayName="Intelligent History"
+        <projectConfigurable parentId="tools" displayName="Intelligent History - Jira"
                              instance="com.alisli.intelligenthistory.settings.JiraConfigurable"/>
+        <projectConfigurable parentId="tools" displayName="Intelligent History - Regex Patterns"
+                             instance="com.alisli.intelligenthistory.settings.RegexConfigurable"/>
         <projectService serviceImplementation="com.alisli.intelligenthistory.settings.JiraConfig"/>
+        <projectService serviceImplementation="com.alisli.intelligenthistory.settings.RegexConfig"/>
         <toolWindow id="Jira Metadata" secondary="false" icon="MyIcons.Jira" anchor="left"
                     doNotActivateOnStart="true" canCloseContents="true"
                     factoryClass="com.alisli.intelligenthistory.components.JiraIssuePanelFactory"/>
