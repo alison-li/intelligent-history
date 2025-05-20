@@ -1,6 +1,7 @@
 package com.alisli.intelligenthistory.services;
 
 import com.alisli.intelligenthistory.model.RevisionDiffMetadata;
+import com.alisli.intelligenthistory.settings.RegexConfig;
 import com.github.difflib.DiffUtils;
 import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.DeltaType;
@@ -32,9 +33,10 @@ import java.util.*;
  * Project service for analyzing diffs between revisions.
  */
 public final class DiffAnalyzerService {
-    private static final String DOCUMENTATION_PATTERN = "\\s*\\W(\\*|/\\*|//)(.*)";
-    private static final String IMPORT_PATTERN = "import(.*)";
-    private static final String ANNOTATION_PATTERN = "\\s*@(Deprecated|Suppress[A-Za-z]*)(.*)";
+    // Default patterns to use as fallback
+    private static final String DEFAULT_DOCUMENTATION_PATTERN = "\\s*\\W(\\*|/\\*|//)(.*)";
+    private static final String DEFAULT_IMPORT_PATTERN = "import(.*)";
+    private static final String DEFAULT_ANNOTATION_PATTERN = "\\s*@(Deprecated|Suppress[A-Za-z]*)(.*)";
     private static final Logger LOG = Logger.getInstance(DiffAnalyzerService.class);
 
     public static Set<Integer> getImportantCommits(Project project, VirtualFile root, FileHistoryUi logUi) {
@@ -49,7 +51,7 @@ public final class DiffAnalyzerService {
         try {
             ContentRevision firstContentRev = contentRevisions.get(0);
             String firstContent = firstContentRev.getContent();
-            RevisionDiffMetadata firstMetadata = getRevisionMetadata("", firstContent);
+            RevisionDiffMetadata firstMetadata = getRevisionMetadata("", firstContent, project);
             Hash firstHash = HashImpl.build(((GitRevisionNumber) firstContentRev.getRevisionNumber()).getRev());
             int firstCommitIndex = logStorage.getCommitIndex(firstHash, root);
             if (firstMetadata.getOther() >= 1) {
@@ -65,7 +67,7 @@ public final class DiffAnalyzerService {
             try {
                 String beforeContent = contentRev1.getContent();
                 String afterContent = contentRev2.getContent();
-                RevisionDiffMetadata metadata = getRevisionMetadata(beforeContent, afterContent);
+                RevisionDiffMetadata metadata = getRevisionMetadata(beforeContent, afterContent, project);
                 if (metadata.getOther() >= 1) {
                     Hash hash = HashImpl.build(((GitRevisionNumber) contentRev2.getRevisionNumber()).getRev());
                     int commitIndex = logStorage.getCommitIndex(hash, root);
@@ -99,7 +101,7 @@ public final class DiffAnalyzerService {
         Hash firstHash = commitMetadataList.get(0).getId();
         ContentRevision firstContentRevision = diffHandler.createContentRevision(Objects.requireNonNull(logUi.getPathInCommit(firstHash)), firstHash);
         String firstContent = firstContentRevision.getContent();
-        metadataMap.put(logStorage.getCommitIndex(firstHash, root), getRevisionMetadata("", firstContent));
+        metadataMap.put(logStorage.getCommitIndex(firstHash, root), getRevisionMetadata("", firstContent, project));
 
         for (int i = 0; i < commitMetadataList.size() - 1; i++) {
             Hash hash1 = commitMetadataList.get(i).getId();
@@ -108,7 +110,7 @@ public final class DiffAnalyzerService {
             ContentRevision contentRev2 = diffHandler.createContentRevision(Objects.requireNonNull(logUi.getPathInCommit(hash2)), hash2);
             String beforeContent = contentRev1.getContent();
             String afterContent = contentRev2.getContent();
-            RevisionDiffMetadata metadata = getRevisionMetadata(beforeContent, afterContent);
+            RevisionDiffMetadata metadata = getRevisionMetadata(beforeContent, afterContent, project);
             metadataMap.put(logStorage.getCommitIndex(hash2, root), metadata);
         }
 
@@ -141,7 +143,7 @@ public final class DiffAnalyzerService {
         return revisionList;
     }
 
-    private static RevisionDiffMetadata getRevisionMetadata(String beforeContent, String afterContent) {
+    private static RevisionDiffMetadata getRevisionMetadata(String beforeContent, String afterContent, Project project) {
         List<AbstractDelta<String>> deltas = getDeltas(beforeContent, afterContent);
         RevisionDiffMetadata revisionMetadata = new RevisionDiffMetadata(beforeContent, afterContent);
         for (AbstractDelta<String> delta : deltas) {
@@ -150,8 +152,8 @@ public final class DiffAnalyzerService {
             if (deltaType == DeltaType.CHANGE) {
                 List<String> sourceLines = delta.getSource().getLines();
                 List<String> targetLines = delta.getTarget().getLines();
-                RevisionDiffMetadata sourceMetadata = evaluateDeltaByLine(sourceLines);
-                RevisionDiffMetadata targetMetadata = evaluateDeltaByLine(targetLines);
+                RevisionDiffMetadata sourceMetadata = evaluateDeltaByLine(sourceLines, project);
+                RevisionDiffMetadata targetMetadata = evaluateDeltaByLine(targetLines, project);
                 tempMetadata.setDocs(Math.max(sourceMetadata.getDocs(), targetMetadata.getDocs()));
                 tempMetadata.setAnnotations(Math.max(sourceMetadata.getAnnotations(), targetMetadata.getAnnotations()));
                 tempMetadata.setImports(Math.max(sourceMetadata.getImports(), targetMetadata.getImports()));
@@ -159,21 +161,34 @@ public final class DiffAnalyzerService {
                 tempMetadata.setOther(Math.max(sourceMetadata.getOther(), targetMetadata.getOther()));
             } else if (deltaType == DeltaType.DELETE || deltaType == DeltaType.INSERT) {
                 List<String> lineList = deltaType == DeltaType.DELETE ? delta.getSource().getLines() : delta.getTarget().getLines();
-                tempMetadata = evaluateDeltaByLine(lineList);
+                tempMetadata = evaluateDeltaByLine(lineList, project);
             }
             revisionMetadata.mergeMetadata(tempMetadata);
         }
         return revisionMetadata;
     }
 
-    private static RevisionDiffMetadata evaluateDeltaByLine(List<String> lineList) {
+    private static RevisionDiffMetadata evaluateDeltaByLine(List<String> lineList, Project project) {
         int numDocs = 0, numAnnotations = 0, numImports = 0, numNewLines = 0, numOther = 0;
+        
+        // Get the configured patterns or use defaults
+        String documentationPattern = DEFAULT_DOCUMENTATION_PATTERN;
+        String importPattern = DEFAULT_IMPORT_PATTERN;
+        String annotationPattern = DEFAULT_ANNOTATION_PATTERN;
+        
+        RegexConfig config = project != null ? RegexConfig.getInstance(project) : null;
+        if (config != null) {
+            documentationPattern = config.getDocumentationPattern();
+            importPattern = config.getImportPattern();
+            annotationPattern = config.getAnnotationPattern();
+        }
+        
         for (String line : lineList) {
-            if (line.matches(DOCUMENTATION_PATTERN)) {
+            if (line.matches(documentationPattern)) {
                 numDocs++;
-            } else if (line.matches(IMPORT_PATTERN)) {
+            } else if (line.matches(importPattern)) {
                 numImports++;
-            } else if (line.matches(ANNOTATION_PATTERN)) {
+            } else if (line.matches(annotationPattern)) {
                 numAnnotations++;
             } else if (line.isEmpty()) {
                 numNewLines++;
